@@ -8,7 +8,7 @@ import LoginScreen from "./app/src/screens/Login";
 import SignupScreen from "./app/src/screens/Signup";
 import JornadaScreen from "./app/src/screens/jornada";
 import GuiasScreen from "./app/src/screens/guias";
-import TabTwoScreen from "./app/src/screens/explore";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -40,7 +40,6 @@ export default function App() {
           <>
             <Stack.Screen name="Courses" component={GuiasScreen} />
             <Stack.Screen name="Jornada" component={JornadaScreen} />
-            <Stack.Screen name="Explore" component={TabTwoScreen} />
           </>
         ) : (
           <>
