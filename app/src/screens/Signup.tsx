@@ -39,8 +39,10 @@ export default function SignupScreen({ navigation }: Props) {
       <TextInput
         style={styles.input}
         placeholder="Telefone"
+        keyboardType="numeric"
         value={phone}
         onChangeText={setPhone}
+        maxLength={9}
       />
       <TextInput
         style={styles.input}

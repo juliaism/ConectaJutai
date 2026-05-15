@@ -39,8 +39,21 @@ export default function LoginScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <TextInput style={styles.input} placeholder="Telefone" value={phone} onChangeText={setPhone} />
-      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={password} onChangeText={setPassword} />
+      <TextInput
+       style={styles.input} 
+       placeholder="Telefone"
+       keyboardType="numeric" 
+       value={phone} 
+       onChangeText={setPhone}
+       maxLength={9}
+     />
+      <TextInput 
+       style={styles.input} 
+       placeholder="Senha"
+       secureTextEntry 
+       value={password} 
+       onChangeText={setPassword} 
+       />
       <Button title="Entrar" onPress={handleLogin} />
       <Text style={styles.link} onPress={() => navigation.navigate("Signup")}>
         Criar conta
