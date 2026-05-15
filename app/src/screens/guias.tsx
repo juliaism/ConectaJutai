@@ -6,7 +6,7 @@ export default function GuiasScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [conteudo, setConteudo] = useState({ titulo: '', texto: '' });
 
-  const abrirManual = (titulo, texto) => {
+  const abrirManual = (titulo : string, texto : string) => {
     setConteudo({ titulo, texto });
     setModalVisible(true);
   };

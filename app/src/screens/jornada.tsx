@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   stepTitle: { fontSize: 18, fontWeight: 'bold', color: '#7F8C8D' },
   stepTitleActive: { fontSize: 18, fontWeight: 'bold', color: '#2C3E50' },
   stepSubtitle: { fontSize: 14, color: '#27AE60', fontWeight: 'bold', marginTop: 5 },
+  stepStatus: { fontSize: 18, fontWeight: 'bold', color: '#7F8C8D' },
   eventCard: { backgroundColor: '#F9E79F', padding: 20, borderRadius: 10, borderStyle: 'dashed', borderWidth: 2, borderColor: '#F1C40F' },
   eventDate: { fontSize: 14, fontWeight: 'bold', color: '#D35400' },
   eventTitle: { fontSize: 20, fontWeight: 'bold', color: '#2C3E50' },
