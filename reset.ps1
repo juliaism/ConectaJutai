@@ -1,10 +1,12 @@
 Write-Host "Removendo node_modules e package-lock.json..."
 
-# Apaga a pasta node_modules
-Remove-Item -Recurse -Force node_modules
+#Apaga node_modules
+Remove-Item -Recurse -Force .\node_modules
+Remove-Item -Recurse -Force .\services\node_modules
 
-# Apaga o package-lock.json
-Remove-Item -Force package-lock.json
+#Apaga package-lock.json
+Remove-Item -Force .\package-lock.json
+Remove-Item -Force .\services\package-lock.json
 
 Write-Host "Instalando dependências novamente..."
 npm install

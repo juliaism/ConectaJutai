@@ -1,9 +1,10 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const supabase = require('../src/config/supabaseClient')
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import supabase from '../config/supabaseClient'
+import { Request, Response } from 'express'
 
-async function signup(req, res) {
-  const { phone, password } = req.body
+export async function signup(req: Request, res: Response) {
+  const { phone, password } = req.body as { phone: string; password: string }
 
   if (!phone || !password) {
     return res.status(400).json({ error: 'Preencha os campos obrigatórios' })
@@ -19,15 +20,15 @@ async function signup(req, res) {
 
     if (error) return res.status(400).json({ error: error.message })
 
-    res.status(201).json({ message: 'Cadastro finalizado com sucesso', user: data[0] })
+    res.status(201).json({ message: 'Cadastro finalizado com sucesso', user: data?.[0] })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Erro interno no servidor' })
   }
 }
 
-async function login(req, res) {
-  const { phone, password } = req.body
+export async function login(req: Request, res: Response) {
+  const { phone, password } = req.body as { phone: string; password: string }
 
   if (!phone || !password) {
     return res.status(400).json({ error: 'Preencha os campos obrigatórios' })
@@ -44,7 +45,6 @@ async function login(req, res) {
       return res.status(400).json({ error: 'Usuário não encontrado' })
     }
 
-
     const match = await bcrypt.compare(password, user.password_hash)
     if (!match) {
       return res.status(401).json({ error: 'Senha incorreta' })
@@ -52,7 +52,7 @@ async function login(req, res) {
 
     const token = jwt.sign(
       { id: user.id, phone: user.phone },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET as string,
       { expiresIn: '30d' }
     )
 
@@ -63,8 +63,8 @@ async function login(req, res) {
   }
 }
 
-async function resetPassword(req, res) {
-  const { phone, newPassword } = req.body
+export async function resetPassword(req: Request, res: Response) {
+  const { phone, newPassword } = req.body as { phone: string; newPassword: string }
 
   if (!phone || !newPassword) {
     return res.status(400).json({ error: 'Preencha os campos obrigatórios' })
@@ -86,5 +86,3 @@ async function resetPassword(req, res) {
     res.status(500).json({ error: 'Erro interno no servidor' })
   }
 }
-
-module.exports = { signup, login, resetPassword}

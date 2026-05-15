@@ -2,6 +2,7 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import JornadaScreen from './app/src/screens/jornada';
+import TabLayout from './app/_layout';
 
 export default function App(): React.ReactElement {
   return React.createElement(
