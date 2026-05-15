@@ -1,6 +1,9 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { registerRootComponent } from 'expo';
+import App from './App';
+
 
 export default function HomeScreen() {
   const router = useRouter(); 
@@ -56,3 +59,5 @@ const styles = StyleSheet.create({
   cardTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
   cardSubtitle: { color: '#FFF', fontSize: 14, opacity: 0.9 },
 });
+
+registerRootComponent(App);

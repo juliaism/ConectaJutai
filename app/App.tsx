@@ -1,16 +1,14 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Login from './screens/Login';
-import Signup from './screens/Signup'
 
-export default function App() {
+
+export default function App(): JSX.Element {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Login/>
-      <Signup/>
+      
     </View>
-    
   );
 }
 
