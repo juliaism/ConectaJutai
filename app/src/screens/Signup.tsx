@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {View, Text, TextInput, Button, StyleSheet, Alert} from "react-native";
-import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signup } from "../service/authService";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type RootStackParamList = {
@@ -18,23 +19,19 @@ export default function SignupScreen({ navigation }: Props) {
   const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
-    try {
-      const response = await axios.post("http://localhost:3000/auth/signup", {
-        phone,
-        password,
-      });
-
-      if (response.data?.message) {
-        Alert.alert("Cadastro realizado com sucesso!");
-        navigation.navigate("Login");
-      } else {
-        Alert.alert("Não foi possível criar usuário");
-      }
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Falha ao se cadastrar");
+  try {
+    const data = await signup(phone, password);
+    if (data.message) {
+      Alert.alert("Cadastro realizado com sucesso!");
+      navigation.navigate("Login");
+    } else {
+      Alert.alert(data.error || "Erro ao cadastrar");
     }
-  };
+  } catch {
+    Alert.alert("Erro de conexão com servidor");
+  }
+};
+
 
   return (
     <View style={styles.container}>

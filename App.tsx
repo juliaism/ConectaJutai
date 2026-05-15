@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import { ActivityIndicator, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,6 +11,16 @@ import GuiasScreen from "./app/src/screens/guias";
 import ResetPasswordScreen from "./app/src/screens/ResetPassowrd";
 
 
+type AuthContextType = {
+  isLoggedIn: boolean;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export const AuthContext = createContext<AuthContextType>({
+  isLoggedIn: false,
+  setIsLoggedIn: () => {},
+});
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -21,7 +31,7 @@ export default function App() {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem("token");
       setIsLoggedIn(!!token);
-      setLoading(false);
+      setLoading
     };
     checkToken();
   }, []);
@@ -35,6 +45,7 @@ export default function App() {
   }
 
   return (
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
     <NavigationContainer>
       <Stack.Navigator>
         {isLoggedIn ? (
@@ -51,6 +62,7 @@ export default function App() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 
