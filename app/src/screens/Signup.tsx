@@ -19,7 +19,7 @@ export default function SignupScreen({ navigation }: Props) {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post("http://192.168.86.40/auth/signup", {
+      const response = await axios.post("http://localhost:3000/auth/signup", {
         phone,
         password,
       });

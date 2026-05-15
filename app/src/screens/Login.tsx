@@ -8,6 +8,7 @@ type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Courses: undefined;
+  ResetPassword: undefined;
 };
 
 type Props = {
@@ -20,7 +21,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://192.168.86.40/auth/login", {
+      const response = await axios.post("http://localhost:3000/auth/login", {
         phone,
         password,
       });
@@ -55,6 +56,11 @@ export default function LoginScreen({ navigation }: Props) {
         onChangeText={setPassword}
       />
       <Button title="Entrar" onPress={handleLogin} />
+
+      <Text style={styles.link} onPress={() => navigation.navigate("ResetPassword")}>
+        Esqueci minha senha
+      </Text>
+
       <Text style={styles.link} onPress={() => navigation.navigate("Signup")}>
         Cadastrar-se
       </Text>

@@ -1,88 +1,97 @@
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import supabase from '../config/supabaseClient'
-import { Request, Response } from 'express'
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import supabase from "../config/supabaseClient";
+import { Request, Response } from "express";
 
+// Cadastro de usuário
 export async function signup(req: Request, res: Response) {
-  const { phone, password } = req.body as { phone: string; password: string }
+  const { phone, password } = req.body as { phone: string; password: string };
 
   if (!phone || !password) {
-    return res.status(400).json({ error: 'Preencha os campos obrigatórios' })
+    return res.status(400).json({ error: "Preencha os campos obrigatórios" });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const { data, error } = await supabase
-      .from('users')
+      .from("users")
       .insert([{ phone, password_hash: hashedPassword }])
-      .select()
+      .select();
 
-    if (error) return res.status(400).json({ error: error.message })
+    if (error) return res.status(400).json({ error: error.message });
 
-    res.status(201).json({ message: 'Cadastro finalizado com sucesso', user: data?.[0] })
+    return res
+      .status(201)
+      .json({ message: "Cadastro finalizado com sucesso", user: data?.[0] });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Erro interno no servidor' })
+    console.error(err);
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 }
 
+// Login de usuário
 export async function login(req: Request, res: Response) {
-  const { phone, password } = req.body as { phone: string; password: string }
+  const { phone, password } = req.body as { phone: string; password: string };
 
   if (!phone || !password) {
-    return res.status(400).json({ error: 'Preencha os campos obrigatórios' })
+    return res.status(400).json({ error: "Preencha os campos obrigatórios" });
   }
 
   try {
     const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('phone', phone)
-      .single()
+      .from("users")
+      .select("*")
+      .eq("phone", phone)
+      .single();
 
     if (error || !user) {
-      return res.status(400).json({ error: 'Usuário não encontrado' })
+      return res.status(400).json({ error: "Usuário não encontrado" });
     }
 
-    const match = await bcrypt.compare(password, user.password_hash)
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      return res.status(401).json({ error: 'Senha incorreta' })
+      return res.status(401).json({ error: "Senha incorreta" });
     }
 
     const token = jwt.sign(
       { id: user.id, phone: user.phone },
       process.env.JWT_SECRET as string,
-      { expiresIn: '30d' }
-    )
+      { expiresIn: "30d" }
+    );
 
-    res.json({ message: 'Login realizado com sucesso', token })
+    return res.json({ message: "Login realizado com sucesso", token });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Erro interno no servidor' })
+    console.error(err);
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 }
 
+// Resetar senha
 export async function resetPassword(req: Request, res: Response) {
-  const { phone, newPassword } = req.body as { phone: string; newPassword: string }
+  const { phone, newPassword } = req.body as {
+    phone: string;
+    newPassword: string;
+  };
 
   if (!phone || !newPassword) {
-    return res.status(400).json({ error: 'Preencha os campos obrigatórios' })
+    return res.status(400).json({ error: "Preencha os campos obrigatórios" });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     const { error } = await supabase
-      .from('users')
+      .from("users")
       .update({ password_hash: hashedPassword })
-      .eq('phone', phone)
+      .eq("phone", phone);
 
-    if (error) return res.status(400).json({ error: error.message })
+    if (error) return res.status(400).json({ error: error.message });
 
-    res.json({ message: 'Senha redefinida' })
+    return res.json({ message: "Senha redefinida com sucesso" });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Erro interno no servidor' })
+    console.error(err);
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 }
+
