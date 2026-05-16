@@ -31,7 +31,7 @@ export default function App() {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem("token");
       setIsLoggedIn(!!token);
-      setLoading
+      setLoading(false);
     };
     checkToken();
   }, []);
