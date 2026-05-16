@@ -1,15 +1,14 @@
-import React, { useState, useContext } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { login } from "../service/authService";
-import { AuthContext } from "../../../App";
+import axios from "axios";
+import React, { useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
-  ResetPassword: undefined;
   Courses: undefined;
+  ResetPassword: undefined;
 };
 
 type Props = {
@@ -19,53 +18,111 @@ type Props = {
 export default function LoginScreen({ navigation }: Props) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const { setIsLoggedIn } = useContext(AuthContext);
 
   const handleLogin = async () => {
     try {
-      const data = await login(phone, password);
-      if (data.token) {
-        await AsyncStorage.setItem("token", data.token);
+      const response = await axios.post("http:// inserir ip/auth/login", {
+        phone,
+        password,
+      });
+
+      if (response.data?.token) {
+        await AsyncStorage.setItem("token", response.data.token);
         Alert.alert("Login realizado com sucesso!");
-        setIsLoggedIn(true);
+        navigation.navigate("Courses");
       } else {
-        Alert.alert(data.error || "Erro ao fazer login");
+        Alert.alert("Erro no login");
       }
-    } catch {
-      Alert.alert("Erro de conexão com servidor");
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Não foi possível realizar login");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>ConectaJutai</Text>
       <TextInput
-       style={styles.input} 
-       placeholder="Telefone"
-       keyboardType="numeric" 
-       value={phone} 
-       onChangeText={setPhone}
-       maxLength={9}
-     />
-      <TextInput 
-       style={styles.input} 
-       placeholder="Senha"
-       secureTextEntry 
-       value={password} 
-       onChangeText={setPassword} 
-       />
-      <Button title="Entrar" onPress={handleLogin} />
+        style={styles.input}
+        placeholder="Telefone"
+        placeholderTextColor="#95A5A6" /* <-- A cor do texto consertada aqui! */
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad" /* <-- Já coloquei o teclado numérico de brinde! */
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Senha"
+        placeholderTextColor="#95A5A6" /* <-- A cor do texto consertada aqui! */
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+      
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
+  <Text style={styles.buttonText}>Entrar</Text>
+</TouchableOpacity>
+
+      <Text style={styles.link} onPress={() => navigation.navigate("ResetPassword")}>
+        Esqueci minha senha
+      </Text>
+
       <Text style={styles.link} onPress={() => navigation.navigate("Signup")}>
-        Criar conta
+        Cadastrar-se
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginBottom: 15, borderRadius: 5 },
-  link: { marginTop: 15, color: "blue", textAlign: "center" },
+  container: { 
+    flex: 1, 
+    justifyContent: "center",
+    padding: 25, 
+    backgroundColor: "#F4F7F6" // Um cinza bem clarinho com toque de verde (fundo)
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#27AE60", // Verde forte (cor da marca)
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#7F8C8D",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  input: {
+    backgroundColor: "#FFFFFF", // Fundo do campo branco
+    borderWidth: 1,
+    borderColor: "#DCDCDC",
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 10, // Bordas mais arredondadas (moderno)
+    fontSize: 16,
+    color: "#2C3E50",
+  },
+  buttonContainer: {
+    backgroundColor: "#27AE60", // Botão Verde
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  link: { 
+    marginTop: 20, 
+    color: "#2980B9", // Azul suave para os links
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "500"
+  },
 });
 
