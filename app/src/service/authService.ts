@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000"; 
+const API_URL = "https://hazing-dictate-fineness.ngrok-free.dev";
 
 export const signup = async (phone: string, password: string) => {
   const response = await axios.post(`${API_URL}/auth/signup`, { phone, password });
