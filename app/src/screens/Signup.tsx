@@ -1,78 +1,117 @@
+import axios from "axios";
 import React, { useState } from "react";
-import {View, Text, TextInput, Button, StyleSheet, Alert} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { signup } from "../service/authService";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-type RootStackParamList = {
-  Login: undefined;
-  Signup: undefined;
-  Courses: undefined;
-};
-
-type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
-};
-
-export default function SignupScreen({ navigation }: Props) {
+export default function SignupScreen({ navigation }: any) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
-  try {
-    const data = await signup(phone, password);
-    if (data.message) {
-      Alert.alert("Cadastro realizado com sucesso!");
-      navigation.navigate("Login");
-    } else {
-      Alert.alert(data.error || "Erro ao cadastrar");
-    }
-  } catch {
-    Alert.alert("Erro de conexão com servidor");
-  }
-};
+    try {
+      // ⚠️ LEMBRETE: Troque o localhost pelo seu IP (ex: 192.168.x.x) para funcionar no celular!
+      const response = await axios.post("http://inserir ip/auth/signup", {
+        phone,
+        password,
+      });
 
+      if (response.data?.message) {
+        Alert.alert("Sucesso!", "Sua conta foi criada. Agora faça seu login.");
+        navigation.navigate("Login");
+      } else {
+        Alert.alert("Erro", "Não foi possível criar o usuário.");
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Erro", "Falha ao se cadastrar. Verifique a conexão.");
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Criar Conta</Text>
+      <Text style={styles.subtitle}>Junte-se aos jovens agricultores do Jutaí!</Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Telefone"
-        keyboardType="numeric"
+        placeholder="Seu telefone"
+        placeholderTextColor="#95A5A6"
         value={phone}
         onChangeText={setPhone}
-        maxLength={9}
+        keyboardType="phone-pad"
       />
+
       <TextInput
         style={styles.input}
-        placeholder="Senha"
+        placeholder="Crie uma senha"
+        placeholderTextColor="#95A5A6"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Cadastrar" onPress={handleSignup} />
+
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleSignup}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
+
       <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
-        Já tenho conta
+        Já tenho uma conta? Entrar
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
+  container: { 
+    flex: 1, 
+    justifyContent: "center", 
+    padding: 25, 
+    backgroundColor: "#F4F7F6" 
+  },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: "center",
+    color: "#27AE60",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#7F8C8D",
+    textAlign: "center",
+    marginBottom: 30,
   },
   input: {
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
+    borderColor: "#DCDCDC",
+    padding: 15,
     marginBottom: 15,
-    borderRadius: 5,
+    borderRadius: 10,
+    fontSize: 16,
+    color: "#2C3E50",
   },
-  link: { marginTop: 15, color: "blue", textAlign: "center" },
+  buttonContainer: {
+    backgroundColor: "#27AE60",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+    elevation: 2, // Sombra leve no Android
+    shadowColor: "#000", // Sombra leve no iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  link: { 
+    marginTop: 20, 
+    color: "#2980B9", 
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "500"
+  },
 });
