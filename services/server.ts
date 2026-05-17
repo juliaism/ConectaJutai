@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth";
-import courseRoutes from "./routes/course";
-import moduleRoutes from "./routes/module";
-import videoRoutes from "./routes/video";
-import progressRoutes from "./routes/progress";
+import authRoutes from "./routes/auth.ts";
+import courseRoutes from "./routes/course.ts";
+import moduleRoutes from "./routes/module.ts";
+import videoRoutes from "./routes/video.ts";
+import progressRoutes from "./routes/progress.ts";
 
 dotenv.config();
 

@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "concurrently \"expo start\" \"ts-node services/index.ts\""
+    "dev": "concurrently \"expo start\" \"ts-node services/server.ts\""
   },
   "dependencies": {
     "@expo/cli": "^55.0.9",
@@ -45,6 +45,7 @@
     "@types/react": "~19.1.10",
     "@types/react-dom": "~19.1.7",
     "concurrently": "^9.2.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.0"
   },
   "private": true

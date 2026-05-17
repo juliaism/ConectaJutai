@@ -7,6 +7,8 @@
     "allowJs": true,
     "lib": ["esnext"],
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true
   }
 }
