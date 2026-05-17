@@ -8,8 +8,7 @@ export default function SignupScreen({ navigation }: any) {
 
   const handleSignup = async () => {
     try {
-      // ⚠️ LEMBRETE: Troque o localhost pelo seu IP (ex: 192.168.x.x) para funcionar no celular!
-      const response = await axios.post("http://inserir ip/auth/signup", {
+      const response = await axios.post("http://seu ip/auth/signup", {
         phone,
         password,
       });

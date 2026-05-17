@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./app/src/screens/Login";
 import SignupScreen from "./app/src/screens/Signup";
 import JornadaScreen from "./app/src/screens/jornada";
-import GuiasScreen from "./app/src/screens/guias";
+import GuiasScreen from "./app/src/screens/courses";
 import ResetPasswordScreen from "./app/src/screens/ResetPassowrd";
 
 
@@ -50,7 +50,7 @@ export default function App() {
       <Stack.Navigator>
         {isLoggedIn ? (
           <>
-            <Stack.Screen name="Courses" component={GuiasScreen} />
+            <Stack.Screen name="courses" component={GuiasScreen} />
             <Stack.Screen name="Jornada" component={JornadaScreen} />
           </>
         ) : (

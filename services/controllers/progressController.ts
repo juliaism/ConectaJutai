@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
-import supabase from "../config/supabaseClient";
+import express from 'express';
+import type { Request, Response } from 'express';
+import supabase from "../config/supabaseClient.ts";
 
 export async function saveProgress(req: Request, res: Response): Promise<void> {
   const { userId, videoId } = req.body;

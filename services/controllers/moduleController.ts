@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import express from 'express';
+import type { Request, Response } from 'express';
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(

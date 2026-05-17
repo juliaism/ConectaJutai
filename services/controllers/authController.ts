@@ -1,7 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import supabase from "../config/supabaseClient";
-import { Request, Response } from "express";
+import type { JwtPayload } from "jsonwebtoken";
+import supabase from "../config/supabaseClient.ts";
+import express from 'express';
+import type { Request, Response } from 'express';
 
 export async function signup(req: Request, res: Response) {
   const { phone, password } = req.body as { phone: string; password: string };
