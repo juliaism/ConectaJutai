@@ -8,7 +8,7 @@ export default function SignupScreen({ navigation }: any) {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post("http://seu ip/auth/signup", {
+      const response = await axios.post("http://192.168.86.40:3000/auth/signup", {
         phone,
         password,
       });
@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginTop: 10,
-    elevation: 2, // Sombra leve no Android
-    shadowColor: "#000", // Sombra leve no iOS
+    elevation: 2,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { resetPassword } from "../service/authService";
+import axios from "axios";
 
 type RootStackParamList = {
   Login: undefined;
@@ -18,49 +18,118 @@ export default function ResetPasswordScreen({ navigation }: Props) {
   const [newPassword, setNewPassword] = useState("");
 
   const handleReset = async () => {
+    if (!phone || !newPassword) {
+      Alert.alert("Erro", "Preencha todos os campos");
+      return;
+    }
+
+    if (!/^\d{9}$/.test(phone)) {
+      Alert.alert("Erro", "Telefone deve ter 9 números");
+      return;
+    }
+
+    if (!/^\d{8}$/.test(newPassword)) {
+      Alert.alert("Erro", "Senha deve ter exatamente 8 números");
+      return;
+    }
+
     try {
-      const data = await resetPassword(phone, newPassword);
-      Alert.alert(data.message || "Senha redefinida com sucesso!");
-      navigation.navigate("Login");
-    } catch {
-      Alert.alert("Erro ao redefinir senha");
+      const response = await axios.post("http://192.168.86.40:3000/auth/reset", {
+        phone,
+        newPassword,
+      });
+
+      if (response.data?.message) {
+        Alert.alert("Sucesso!", "Senha redefinida com sucesso!");
+        navigation.navigate("Login");
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Erro", "Falha ao redefinir senha. Tente novamente.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Resetar Senha</Text>
+      <Text style={styles.title}>Nova Senha</Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Telefone cadastrado"
+        placeholder="Seu telefone (9 números)"
+        placeholderTextColor="#95A5A6"
         value={phone}
         onChangeText={setPhone}
+        keyboardType="numeric"
       />
+
       <TextInput
         style={styles.input}
-        placeholder="Nova senha"
+        placeholder="Crie uma nova senha (8 números)"
+        placeholderTextColor="#95A5A6"
         secureTextEntry
         value={newPassword}
         onChangeText={setNewPassword}
+        keyboardType="numeric"
       />
-      <Button title="Redefinir" onPress={handleReset} />
+
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleReset}>
+        <Text style={styles.buttonText}>Criar Nova Senha</Text>
+      </TouchableOpacity>
+
       <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
-        Voltar ao Login
+        Voltar para Login
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 25,
+    backgroundColor: "#F4F7F6",
   },
-  link: { marginTop: 15, color: "blue", textAlign: "center" },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+    color: "#27AE60",
+  },
+  input: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#DCDCDC",
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 10,
+    fontSize: 16,
+    color: "#2C3E50",
+  },
+  buttonContainer: {
+    backgroundColor: "#27AE60",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  link: {
+    marginTop: 20,
+    color: "#2980B9",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "500",
+  },
 });
 

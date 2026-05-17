@@ -1,28 +1,13 @@
 import React, { useEffect, useState, createContext } from "react";
 import { ActivityIndicator, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import LoginScreen from "./app/src/screens/Login";
-import SignupScreen from "./app/src/screens/Signup";
-import JornadaScreen from "./app/src/screens/jornada";
-import GuiasScreen from "./app/src/screens/courses";
-import ResetPasswordScreen from "./app/src/screens/ResetPassowrd";
-import ProfileScreen from "./app/src/screens/Perfil";
-
+import Navigation from "./app/src/navigation/Navigation";
+import { AuthContext } from "./app/src/context/authContext";
 
 type AuthContextType = {
   isLoggedIn: boolean;
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoggedIn: (value:boolean) => void;
 };
-
-export const AuthContext = createContext<AuthContextType>({
-  isLoggedIn: false,
-  setIsLoggedIn: () => {},
-});
-
-const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -47,23 +32,7 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-    <NavigationContainer>
-      <Stack.Navigator>
-        {isLoggedIn ? (
-          <>
-            <Stack.Screen name="courses" component={GuiasScreen} />
-            <Stack.Screen name="Jornada" component={JornadaScreen} />
-            <Stack.Screen name="Perfil" component={ProfileScreen} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
-            <Stack.Screen name="Signup" component={SignupScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+      <Navigation />
     </AuthContext.Provider>
   );
 }

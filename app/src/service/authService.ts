@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://seu ip:3000";
+const API_URL = "https://192.168.86.40:3000";
 
 export const signup = async (phone: string, password: string) => {
   const response = await axios.post(`${API_URL}/auth/signup`, { phone, password });

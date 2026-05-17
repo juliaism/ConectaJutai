@@ -1,7 +1,8 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../context/authContext";
 
 export default function ProfileScreen({ navigation }: any) {
   const [userPhone, setUserPhone] = useState("");
@@ -9,7 +10,11 @@ export default function ProfileScreen({ navigation }: any) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showResetForm, setShowResetForm] = useState(false);
-
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    return null;
+  }
+  const { setIsLoggedIn } = authContext
   useEffect(() => {
     loadUserData();
   }, []);
@@ -81,7 +86,7 @@ export default function ProfileScreen({ navigation }: any) {
             try {
               await AsyncStorage.removeItem("userToken");
               await AsyncStorage.removeItem("userPhone");
-              navigation.navigate("Login");
+              setIsLoggedIn(false);
             } catch (err) {
               console.error("Erro ao fazer logout:", err);
               Alert.alert("Erro", "Falha ao sair da conta");

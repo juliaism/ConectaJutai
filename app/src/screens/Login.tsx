@@ -21,7 +21,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http:// inserir ip/auth/login", {
+      const response = await axios.post("http://192.168.86.40:3000/auth/login", {
         phone,
         password,
       });
