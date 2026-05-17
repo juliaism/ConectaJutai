@@ -5,6 +5,7 @@ import supabase from "../config/supabaseClient.ts";
 import express from 'express';
 import type { Request, Response } from 'express';
 
+
 export async function signup(req: Request, res: Response) {
   const { phone, password } = req.body as { phone: string; password: string };
 
@@ -13,6 +14,9 @@ export async function signup(req: Request, res: Response) {
   }
   if (!/^\d{9}$/.test(phone)) {
     return res.status(400).json({ error: "Telefone deve ter 9 números" });
+  }
+  if (!/^\d{8}$/.test(password)) {
+  return res.status(400).json({ error: "Senha deve ter 8 números" });
   }
 
   try {
@@ -40,9 +44,7 @@ export async function login(req: Request, res: Response) {
   if (!phone || !password) {
     return res.status(400).json({ error: "Preencha os campos obrigatórios" });
   }
-  if (!/^\d{9}$/.test(phone)) {
-    return res.status(400).json({ error: "Telefone deve ter 9 números" });
-  }
+  
 
   try {
     const { data: user, error } = await supabase
@@ -84,6 +86,9 @@ export async function resetPassword(req: Request, res: Response) {
   }
   if (!/^\d{9}$/.test(phone)) {
     return res.status(400).json({ error: "Telefone deve ter 9 números" });
+  }
+  if (!/^\d{8}$/.test(newPassword)) {
+  return res.status(400).json({ error: "Senha deve ter 8 números" });
   }
 
   try {

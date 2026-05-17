@@ -28,6 +28,7 @@ export default function LoginScreen({ navigation }: Props) {
 
       if (response.data?.token) {
         await AsyncStorage.setItem("token", response.data.token);
+        await AsyncStorage.setItem("userPhone", phone); 
         Alert.alert("Login realizado com sucesso!");
         navigation.navigate("Courses");
       } else {
@@ -45,16 +46,16 @@ export default function LoginScreen({ navigation }: Props) {
       <TextInput
         style={styles.input}
         placeholder="Telefone"
-        placeholderTextColor="#95A5A6" /* <-- A cor do texto consertada aqui! */
+        placeholderTextColor="#95A5A6" 
         value={phone}
         onChangeText={setPhone}
-        keyboardType="phone-pad" /* <-- Já coloquei o teclado numérico de brinde! */
+        keyboardType="phone-pad"
       />
 
       <TextInput
         style={styles.input}
         placeholder="Senha"
-        placeholderTextColor="#95A5A6" /* <-- A cor do texto consertada aqui! */
+        placeholderTextColor="#95A5A6" 
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -80,14 +81,14 @@ const styles = StyleSheet.create({
     flex: 1, 
     justifyContent: "center",
     padding: 25, 
-    backgroundColor: "#F4F7F6" // Um cinza bem clarinho com toque de verde (fundo)
+    backgroundColor: "#F4F7F6" 
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
-    color: "#27AE60", // Verde forte (cor da marca)
+    color: "#27AE60", 
   },
   subtitle: {
     fontSize: 16,
@@ -96,17 +97,17 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   input: {
-    backgroundColor: "#FFFFFF", // Fundo do campo branco
+    backgroundColor: "#FFFFFF", 
     borderWidth: 1,
     borderColor: "#DCDCDC",
     padding: 15,
     marginBottom: 15,
-    borderRadius: 10, // Bordas mais arredondadas (moderno)
+    borderRadius: 10, 
     fontSize: 16,
     color: "#2C3E50",
   },
   buttonContainer: {
-    backgroundColor: "#27AE60", // Botão Verde
+    backgroundColor: "#27AE60", 
     padding: 15,
     borderRadius: 10,
     marginTop: 10,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   },
   link: { 
     marginTop: 20, 
-    color: "#2980B9", // Azul suave para os links
+    color: "#2980B9", 
     textAlign: "center",
     fontSize: 16,
     fontWeight: "500"

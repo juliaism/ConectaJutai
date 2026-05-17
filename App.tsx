@@ -9,6 +9,7 @@ import SignupScreen from "./app/src/screens/Signup";
 import JornadaScreen from "./app/src/screens/jornada";
 import GuiasScreen from "./app/src/screens/courses";
 import ResetPasswordScreen from "./app/src/screens/ResetPassowrd";
+import ProfileScreen from "./app/src/screens/Perfil";
 
 
 type AuthContextType = {
@@ -52,6 +53,7 @@ export default function App() {
           <>
             <Stack.Screen name="courses" component={GuiasScreen} />
             <Stack.Screen name="Jornada" component={JornadaScreen} />
+            <Stack.Screen name="Perfil" component={ProfileScreen} />
           </>
         ) : (
           <>
