@@ -10,14 +10,22 @@ const supabase = createClient(
 export async function getCourses(req: Request, res: Response): Promise<void> {
   try {
     const { data, error } = await supabase.from("courses").select("*");
-
     if (error) {
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ 
+        status: 'error',
+        message: error.message 
+      });
       return;
     }
-
-    res.json(data);
+    res.status(200).json({
+      status: 'success',
+      message: 'Cursos carregados com sucesso',
+      data: data
+    });
   } catch (err) {
-    res.status(500).json({ error: "Erro interno no servidor" });
+    res.status(500).json({ 
+      status: 'error',
+      message: "Erro interno no servidor" 
+    });
   }
 }

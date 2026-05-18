@@ -29,26 +29,30 @@ export default function JornadaScreen({ navigation }: any) {
   }, []);
 
   const loadCourses = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://192.168.86.40:3000/api/courses', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+  try {
+    setLoading(true);
+    
+    const response = await fetch('http://192.168.86.40:3000/api/courses', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data);
-      } else {
-        Alert.alert('Erro', 'Não foi possível carregar os cursos');
-      }
-    } catch (error) {
-      console.error('Erro ao carregar cursos:', error);
-      Alert.alert('Erro', 'Erro ao conectar com o servidor');
-    } finally {
-      setLoading(false);
+    if (response.ok) {
+      const response_data = await response.json();
+      console.log('Cursos carregados:', response_data);
+
+      const coursesArray = response_data.data || [];
+      setCourses(coursesArray);
+    } else {
+      Alert.alert('Erro', 'Não foi possível carregar os cursos');
     }
-  };
+  } catch (error) {
+    console.error('Erro ao carregar cursos:', error);
+    Alert.alert('Erro', 'Erro ao conectar com o servidor');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleAccessModule = (module: Module, courseTitle: string) => {
     if (module.status === 'locked') {

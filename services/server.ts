@@ -8,6 +8,7 @@ import moduleRoutes from "./routes/module.ts";
 import videoRoutes from "./routes/video.ts";
 import progressRoutes from "./routes/progress.ts";
 
+
 dotenv.config();
 
 const app = express();
@@ -16,10 +17,11 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use("/auth", authRoutes);
-app.use("/courses", courseRoutes);
-app.use("/modules", moduleRoutes);
-app.use("/videos", videoRoutes);
-app.use("/progress", progressRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/modules", moduleRoutes);
+app.use("/api/videos", videoRoutes);
+app.use("/api/progress", progressRoutes);
+
 
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Backend ConectaJutai rodando" });

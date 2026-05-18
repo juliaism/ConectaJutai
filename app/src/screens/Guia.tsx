@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
+import axios from 'axios';
 
 interface Course {
   id: string;
@@ -25,28 +26,32 @@ export default function GuiasScreen() {
     checkDownloadedCourses();
   }, []);
 
+
   const loadCourses = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://192.168.86.40:3000/api/courses', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+  try {
+    setLoading(true);
+    
+    const response = await axios.get('http://192.168.86.40:3000/api/courses', {
+      timeout: 15000
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data);
-      } else {
-        Alert.alert('Erro', 'Não foi possível carregar os cursos');
-      }
-    } catch (error) {
+    console.log('Cursos carregados:', response.data);
+    
+    const coursesArray = response.data.data || [];
+    setCourses(coursesArray);
+    
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
+      Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
+    } else {
       console.error('Erro ao carregar cursos:', error);
-      Alert.alert('Erro', 'Erro ao conectar com o servidor');
-    } finally {
-      setLoading(false);
+      Alert.alert('Erro', 'Não foi possível carregar os cursos');
     }
-  };
-
+  } finally {
+    setLoading(false);
+  }
+};  
+   
   const checkDownloadedCourses = async () => {
     try {
       const downloaded = await AsyncStorage.getItem('downloadedCourses');

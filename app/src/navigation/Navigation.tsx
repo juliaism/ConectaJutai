@@ -66,11 +66,9 @@ function AppTabs() {
             iconName = focused ? "book" : "book-outline";
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
-          }
-          if (route.name === "Jornada"){
+          } else if (route.name === "Jornada"){
             iconName = focused ? "leaf" : "leaf-outline";
-          }
-          if (route.name === "Downloads"){
+          } else if (route.name === "Downloads"){
             iconName = focused ? "download" : "download-outline";
           }
 

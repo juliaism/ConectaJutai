@@ -192,9 +192,6 @@ export default function DownloadsScreen() {
           <View style={styles.emptyState}>
             <Ionicons name="cloud-download-outline" size={64} color="#BDC3C7" />
             <Text style={styles.emptyText}>Nenhum guia baixado</Text>
-            <Text style={styles.emptySubtext}>
-              Volte para "Manuais de Cultivo" e baixe um guia
-            </Text>
           </View>
         )}
 
