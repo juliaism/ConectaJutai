@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://192.168.86.40:3000/api'; //ip
+const API_BASE_URL = 'http://192.168.86.40:3000/api';
 
 export interface VideoResponse {
   id: string;

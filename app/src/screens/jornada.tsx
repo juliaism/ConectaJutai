@@ -31,7 +31,7 @@ export default function JornadaScreen({ navigation }: any) {
   const loadCourses = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.86.40:3000/api/courses', { //ip
+      const response = await fetch('http://192.168.86.40:3000/api/courses', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });

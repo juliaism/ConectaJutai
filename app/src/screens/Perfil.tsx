@@ -49,7 +49,7 @@ export default function ProfileScreen({ navigation }: any) {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://192.168.86.40:3000/auth/reset", //ip
+        "http://192.168.86.40:3000/auth/reset",
         {
           phone: userPhone,
           newPassword,

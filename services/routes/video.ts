@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import {getVideos, getVideoById, updateVideoProgress, markVideoAsWatched, getUserVideoProgress, getModuleProgress, getUserTotalProgress} from "../controllers/videoController";
+import {getVideos, getVideoById, updateVideoProgress, markVideoAsWatched, getUserVideoProgress, getModuleProgress, getUserTotalProgress} from "../controllers/videoController.ts";
 
 const router: Router = express.Router();
 
