@@ -35,9 +35,8 @@ A segurança do usuário é garantida por um sistema de credenciais simplificado
 • 🔑 Credencial: Senha numérica (exatamente 8 dígitos)<br>
 • 🛡️ Segurança: As senhas são criptografadas utilizando bcrypt antes de serem armazenadas no banco de dados<br>
 
-### 📊 **Rastreamento de Progresso**<br>O app registra automaticamente:<br>
+### 📊 **Rastreamento de Progresso**<br>
+O app registra automaticamente:<br>
 • ✅ Aulas assistidas<br>
-• ⏱️ Tempo de visualização<br>
 • 📈 Módulos concluídos<br>
 • 🎯 Porcentagem de conclusão por curso<br>
-• 🏆 Certificados (futuro)<br>
