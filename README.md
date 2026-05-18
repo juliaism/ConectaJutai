@@ -13,7 +13,7 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 
 | Tecnologia | Tipo | Descrição | 
 |---|---|---|
-| **React Native** | Framework | Framework para desenvolvimento mobile multiplataforma |
+| **React Native e Expo** | Framework | Framework para desenvolvimento mobile multiplataforma |
 | **TypeScript** | Linguagem | Superset do JavaScript com tipagem estática |
 | **Supabase** | Backend & BD | Plataforma open-source com PostgreSQL |
 | **AsyncStorage** | Armazenamento Local | Persistência de dados no dispositivo |
