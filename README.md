@@ -32,7 +32,7 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 ### 🔐 **Autenticação**<br>
 A segurança do usuário é garantida por um sistema de credenciais simplificado e rigoroso:<br>
 • 📱 Identificador: Telefone celular (exatamente 9 dígitos)<br>
-• 🔑 Credencial: Senha numérica (exatamente 8 dígitos)<br>
+• 🔑 Credencial: Senha numérica<br>
 • 🛡️ Segurança: As senhas são criptografadas utilizando bcrypt antes de serem armazenadas no banco de dados<br>
 
 ### 📊 **Rastreamento de Progresso**<br>
