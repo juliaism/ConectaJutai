@@ -49,7 +49,7 @@ export default function ProfileScreen({ navigation }: any) {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://192.168.86.40:3000/auth/reset",
+        "http://192.168.86.40:3000/auth/reset", //ip
         {
           phone: userPhone,
           newPassword,
@@ -124,7 +124,7 @@ export default function ProfileScreen({ navigation }: any) {
 
           <TextInput
             style={styles.input}
-            placeholder="Nova senha"
+            placeholder="Nova senha de 8 dígitos"
             placeholderTextColor="#95A5A6"
             secureTextEntry
             value={newPassword}

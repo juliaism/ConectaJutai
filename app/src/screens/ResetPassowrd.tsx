@@ -34,7 +34,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
     }
 
     try {
-      const response = await axios.post("http://192.168.86.40:3000/auth/reset", {
+      const response = await axios.post("http://192.168.86.40:3000/auth/reset", { //ip
         phone,
         newPassword,
       });
@@ -55,7 +55,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
 
       <TextInput
         style={styles.input}
-        placeholder="Seu telefone (9 números)"
+        placeholder="Seu telefone"
         placeholderTextColor="#95A5A6"
         value={phone}
         onChangeText={setPhone}
@@ -64,7 +64,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
 
       <TextInput
         style={styles.input}
-        placeholder="Crie uma nova senha (8 números)"
+        placeholder="Crie uma nova senha (8 dígitos)"
         placeholderTextColor="#95A5A6"
         secureTextEntry
         value={newPassword}

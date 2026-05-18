@@ -19,7 +19,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   const handleLogin = () => {
     if (phone.trim() === "" || password.trim() === "") {
-      Alert.alert("Ops!", "Por favor, preencha o telefone e a senha.");
+      Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
       return;
     }
 
@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation }: Props) {
       
       <TextInput
         style={styles.input}
-        placeholder="Telefone"
+        placeholder="Telefone de 9 dígitos"
         placeholderTextColor="#95A5A6" 
         value={phone}
         onChangeText={setPhone}
@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }: Props) {
 
       <TextInput
         style={styles.input}
-        placeholder="Senha"
+        placeholder="Senha de 8 dígitos"
         placeholderTextColor="#95A5A6" 
         secureTextEntry
         value={password}

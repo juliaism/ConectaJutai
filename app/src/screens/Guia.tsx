@@ -123,4 +123,5 @@ const styles = StyleSheet.create({
   realVideoPlayer: { width: '100%', height: 220, borderRadius: 15, marginBottom: 20, backgroundColor: 'black' },
   modalText: { fontSize: 18, lineHeight: 28, color: '#2C3E50' },
   doneButton: { backgroundColor: "#27AE60", borderRadius: 12, padding: 18, marginTop: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  doneButtonText: { color: "
+  doneButtonText: { backgroundColor: "#27AE60", borderRadius: 12, padding: 18, marginTop: 20, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }
+})

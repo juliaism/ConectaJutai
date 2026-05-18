@@ -20,7 +20,7 @@ export default function SignupScreen({ navigation }: Props) {
 
   const handleSignup = () => {
     if (phone === "" || password === "" || confirmPassword === "") {
-      Alert.alert("Ops!", "Por favor, preencha todos os campos.");
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
 
@@ -39,7 +39,7 @@ export default function SignupScreen({ navigation }: Props) {
       
       <TextInput
         style={styles.input}
-        placeholder="Telefone"
+        placeholder="Telefone de 9 dígitos"
         placeholderTextColor="#95A5A6" 
         value={phone}
         onChangeText={setPhone}
@@ -48,7 +48,7 @@ export default function SignupScreen({ navigation }: Props) {
 
       <TextInput
         style={styles.input}
-        placeholder="Senha"
+        placeholder="Senha de 8 dígitos"
         placeholderTextColor="#95A5A6" 
         secureTextEntry
         value={password}

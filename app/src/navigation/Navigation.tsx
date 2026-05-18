@@ -7,9 +7,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
-import GuiasScreen from "../screens/courses";
 import ProfileScreen from "../screens/Perfil";
 import ResetPasswordScreen from "../screens/ResetPassowrd";
+import JornadaScreen from "../screens/jornada";
+import GuiasScreen from "../screens/Guia";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,10 +32,13 @@ function AppTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: any;
 
-          if (route.name === "Courses") {
+          if (route.name === "Guia") {
             iconName = focused ? "book" : "book-outline";
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
+          }
+          if (route.name === "jornada"){
+            iconName = focused ? "leaf" : "leaf-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;

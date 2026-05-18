@@ -20,6 +20,15 @@ export async function signup(req: Request, res: Response) {
   }
 
   try {
+      const { data: existingUser, error: checkError } = await supabase
+      .from("users")
+      .select("phone")
+      .eq("phone", phone)
+      .single();
+      if (existingUser) {
+      return res.status(400).json({ error: "Telefone já cadastrado" });
+      } 
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const { data, error } = await supabase
