@@ -26,7 +26,6 @@ export default function DownloadsScreen() {
     try {
       setLoading(true);
 
-      // Obter guias baixados
       const guides = await downloadGuideService.getDownloadedGuides();
       setDownloadedGuides(
         guides.map((g) => ({

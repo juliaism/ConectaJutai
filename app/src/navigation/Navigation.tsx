@@ -1,5 +1,5 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, NavigatorScreenParams} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,8 +9,29 @@ import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
 import ProfileScreen from "../screens/Perfil";
 import ResetPasswordScreen from "../screens/ResetPassowrd";
-import JornadaScreen from "../screens/jornada";
+import JornadaScreen from "../screens/Jornada";
 import GuiasScreen from "../screens/Guia";
+import DownloadsScreen from "../screens/Download";
+import ModuleScreen from "../screens/Modulo";
+
+export type JornadaStackParamList = {
+  JornadaHome: undefined;
+  Modulo: {
+    videoUrl: string;
+    moduleId: string;
+    userId: string;
+    nextModuleId?: string;
+    moduleTitle: string;
+  };
+};
+
+export type AppTabsParamList = {
+  Guia: undefined;
+  Jornada: NavigatorScreenParams<JornadaStackParamList>;
+  Download: undefined;
+  Profile: undefined;
+};
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,6 +42,15 @@ function AuthStack() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ResetPassword" component={(ResetPasswordScreen)} />
+    </Stack.Navigator>
+  );
+}
+
+function JornadaStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="JornadaHome" component={JornadaScreen} />
+      <Stack.Screen name="Modulo" component={ModuleScreen} />
     </Stack.Navigator>
   );
 }
@@ -37,8 +67,11 @@ function AppTabs() {
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
           }
-          if (route.name === "jornada"){
+          if (route.name === "Jornada"){
             iconName = focused ? "leaf" : "leaf-outline";
+          }
+          if (route.name === "Downloads"){
+            iconName = focused ? "download" : "download-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -57,10 +90,24 @@ function AppTabs() {
       })}
     >
       <Tab.Screen
-        name="Courses"
+        name="Guias"
         component={GuiasScreen}
         options={{
           tabBarLabel: "Cursos",
+        }}
+      />
+       <Tab.Screen
+        name="Jornada"
+        component={JornadaStack}
+        options={{
+          tabBarLabel: "Jornada",
+        }}
+      />
+      <Tab.Screen
+        name="Download"
+        component={DownloadsScreen}
+        options={{
+          tabBarLabel: "Downloads",
         }}
       />
       <Tab.Screen
