@@ -4,13 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import axios from 'axios';
+import { downloadGuideService } from '../service/downloadGuiasService';
+
 
 interface Course {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
-  videoUrl: string;
+  imageurl: string;   
+  videourl: string;  
   modules: any[];
 }
 
@@ -63,54 +65,42 @@ export default function GuiasScreen() {
     }
   };
 
-  const downloadCourse = async (course: Course) => {
-    try {
-      setDownloadingCourseId(course.id);
-      setDownloadProgress(0);
+const downloadCourse = async (course: Course) => {
+  if (!course.videourl) {
+    console.error('VideoUrl não encontrada:', course);
+    Alert.alert('Erro', 'URL do vídeo não disponível para este curso');
+    return;
+  }
 
-      const courseDir = `${FileSystem.documentDirectory}courses/${course.id}`;
-      await FileSystem.makeDirectoryAsync(courseDir, { intermediates: true });
+  try {
+    setDownloadingCourseId(course.id);
+    setDownloadProgress(0);
 
-      const videoFileName = `${course.id}_video.mp4`;
-      const videoPath = `${courseDir}/${videoFileName}`;
+    const guideData = {
+      id: course.id,
+      titulo: course.title,
+      texto: course.description,
+      videoPath: course.videourl,
+      videoSize: 0,
+      downloadedAt: new Date().toISOString()
+    };
 
-      const downloadResumable = FileSystem.createDownloadResumable(
-        course.videoUrl,
-        videoPath,
-        {},
-        (downloadProgress) => {
-          const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-          setDownloadProgress(progress);
-        }
-      );
+    await downloadGuideService.downloadGuide(guideData, (progress) => {
+      setDownloadProgress(progress / 100);
+    });
 
-      await downloadResumable.downloadAsync();
+    const updatedDownloaded = [...downloadedCourses, course.id];
+    setDownloadedCourses(updatedDownloaded);
 
-      const courseMetadata = {
-        id: course.id,
-        title: course.title,
-        description: course.description,
-        imageUrl: course.imageUrl,
-        videoPath: videoPath,
-        modules: course.modules,
-        downloadedAt: new Date().toISOString()
-      };
-
-      await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(courseMetadata));
-
-      const updatedDownloaded = [...downloadedCourses, course.id];
-      await AsyncStorage.setItem('downloadedCourses', JSON.stringify(updatedDownloaded));
-      setDownloadedCourses(updatedDownloaded);
-
-      Alert.alert('Sucesso', `${course.title} foi baixado com sucesso!`);
-    } catch (error) {
-      console.error('Erro ao baixar curso:', error);
-      Alert.alert('Erro', 'Erro ao baixar o curso. Tente novamente.');
-    } finally {
-      setDownloadingCourseId(null);
-      setDownloadProgress(0);
-    }
-  };
+    Alert.alert('Sucesso', `${course.title} foi baixado com sucesso!`);
+  } catch (error) {
+    console.error('Erro ao baixar curso:', error);
+    Alert.alert('Erro', 'Erro ao baixar o curso. Tente novamente.');
+  } finally {
+    setDownloadingCourseId(null);
+    setDownloadProgress(0);
+  }
+};
 
   if (loading) {
     return (
@@ -127,7 +117,7 @@ export default function GuiasScreen() {
       {courses.map((course) => (
         <View key={course.id} style={styles.courseCard}>
           <Image
-            source={{ uri: course.imageUrl }}
+            source={{ uri: course.imageurl }}
             style={styles.courseImage}
           />
 

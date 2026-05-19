@@ -60,19 +60,24 @@ function AppTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: any;
+          let iconName: string = "help-circle";
 
-          if (route.name === "Guia") {
-            iconName = focused ? "book" : "book-outline";
-          } else if (route.name === "Profile") {
-            iconName = focused ? "person" : "person-outline";
-          } else if (route.name === "Jornada"){
-            iconName = focused ? "leaf" : "leaf-outline";
-          } else if (route.name === "Downloads"){
-            iconName = focused ? "download" : "download-outline";
+          switch (route.name) {
+            case "Guias":
+              iconName = focused ? "book" : "book-outline";
+              break;
+            case "Jornada":
+              iconName = focused ? "leaf" : "leaf-outline";
+              break;
+            case "Download":
+              iconName = focused ? "download" : "download-outline";
+              break;
+            case "Profile":
+              iconName = focused ? "person" : "person-outline";
+              break;
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName as any} size={size} color={color} />;
         },
         tabBarActiveTintColor: "#27AE60",
         tabBarInactiveTintColor: "#95A5A6",
@@ -90,30 +95,22 @@ function AppTabs() {
       <Tab.Screen
         name="Guias"
         component={GuiasScreen}
-        options={{
-          tabBarLabel: "Cursos",
-        }}
+        options={{ tabBarLabel: "Cursos" }}
       />
-       <Tab.Screen
+      <Tab.Screen
         name="Jornada"
         component={JornadaStack}
-        options={{
-          tabBarLabel: "Jornada",
-        }}
+        options={{ tabBarLabel: "Jornada" }}
       />
       <Tab.Screen
         name="Download"
         component={DownloadsScreen}
-        options={{
-          tabBarLabel: "Downloads",
-        }}
+        options={{ tabBarLabel: "Downloads" }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          tabBarLabel: "Perfil",
-        }}
+        options={{ tabBarLabel: "Perfil" }}
       />
     </Tab.Navigator>
   );
