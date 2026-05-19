@@ -1,13 +1,8 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { registerRootComponent } from "expo";
 import Navigation from "./app/src/navigation/Navigation";
-import { AuthContext } from "./app/src/context/authContext";
-
-type AuthContextType = {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (value:boolean) => void;
-};
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -15,26 +10,31 @@ export default function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = await AsyncStorage.getItem("token");
-      setIsLoggedIn(!!token);
-      setLoading(false);
+      try {
+        const token = await AsyncStorage.getItem("token");
+        console.log("🔑 Token encontrado:", !!token);
+        setIsLoggedIn(!!token);
+      } catch (error) {
+        console.error("❌ Erro ao verificar token:", error);
+        setIsLoggedIn(false);
+      } finally {
+        setLoading(false);
+      }
     };
+
     checkToken();
   }, []);
 
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#27AE60" />
       </View>
     );
   }
 
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      <Navigation />
-    </AuthContext.Provider>
-  );
+  return <Navigation isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
 }
 
+registerRootComponent(App);
 

@@ -26,26 +26,36 @@ export default function GuiasScreen() {
   }, []);
 
   const loadCourses = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('http://192.168.86.40:3000/api/courses', {
-        timeout: 15000
-      });
-
-      console.log('Cursos carregados:', response.data);
-      const coursesArray = response.data.data || [];
-      setCourses(coursesArray);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
-        Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
-      } else {
-        console.error('Erro ao carregar cursos:', error);
-        Alert.alert('Erro', 'Não foi possível carregar os cursos');
-      }
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+    console.log('🔵 Iniciando requisição para /api/courses...');
+    
+    const response = await axios.get('http://192.168.86.40:3000/api/courses', { 
+      timeout: 15000 
+    });
+    
+    console.log('✅ Resposta completa:', JSON.stringify(response.data, null, 2));
+    console.log('📊 response.data:', response.data);
+    console.log('📊 response.data.data:', response.data.data);
+    console.log('📊 Tipo de response.data.data:', typeof response.data.data);
+    console.log('📊 É array?', Array.isArray(response.data.data));
+    
+    const coursesArray = response.data.data || [];
+    console.log('📊 coursesArray final:', coursesArray);
+    console.log('📊 Quantidade de cursos:', coursesArray.length);
+    
+    setCourses(coursesArray);
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
+      Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
+    } else {
+      console.error('❌ Erro ao carregar cursos:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os cursos');
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   const checkDownloadedCourses = async () => {
     try {
@@ -87,7 +97,6 @@ export default function GuiasScreen() {
 
       await downloadResumable.downloadAsync();
 
-      // ✅ Salvar curso com módulos
       const courseMetadata = {
         id: course.id,
         title: course.title,
@@ -127,7 +136,6 @@ export default function GuiasScreen() {
 
       {courses.map((course) => (
         <View key={course.id} style={styles.courseCard}>
-          {/* ✅ SEM IMAGEM - APENAS TEXTO */}
           <Text style={styles.courseTitle}>{course.title}</Text>
           <Text style={styles.courseDescription}>{course.description}</Text>
 

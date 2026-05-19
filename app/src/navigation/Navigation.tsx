@@ -32,7 +32,6 @@ export type AppTabsParamList = {
   Profile: undefined;
 };
 
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -116,18 +115,12 @@ function AppTabs() {
   );
 }
 
-export default function Navigation() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+type NavigationProps = {
+  isLoggedIn: boolean;
+  setIsLoggedIn: (value: boolean) => void;
+};
 
-  React.useEffect(() => {
-    checkLoginStatus();
-  }, []);
-
-  const checkLoginStatus = async () => {
-    const token = await AsyncStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  };
-
+export default function Navigation({ isLoggedIn, setIsLoggedIn }: NavigationProps) {
   return (
     <NavigationContainer>
       {isLoggedIn ? <AppTabs /> : <AuthStack />}

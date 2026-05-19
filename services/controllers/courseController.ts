@@ -7,25 +7,58 @@ const supabase = createClient(
   process.env.SUPABASE_KEY as string
 );
 
-export async function getCourses(req: Request, res: Response): Promise<void> {
+export const getCourses = async (req: Request, res: Response) => {
   try {
-    const { data, error } = await supabase.from("courses").select("*");
-    if (error) {
-      res.status(400).json({ 
-        status: 'error',
-        message: error.message 
-      });
-      return;
+    console.log('🔵 Buscando cursos do Supabase...');
+    
+    // Buscar apenas cursos
+    const { data: courses, error: coursesError } = await supabase
+      .from("courses")
+      .select("id, title, description, level, unlocked, created_at");
+    
+    console.log('✅ Cursos encontrados:', courses?.length);
+    console.log('📊 Cursos:', courses);
+    
+    if (coursesError) {
+      console.error('❌ Erro ao buscar cursos:', coursesError);
+      return res.status(500).json({ status: "error", message: coursesError.message });
     }
+
+    // Para cada curso, buscar módulos e vídeos
+    const coursesWithModules = await Promise.all(
+      (courses || []).map(async (course) => {
+        const { data: modules } = await supabase
+          .from("modules")
+          .select("id, title, level, order_index, created_at")
+          .eq("course_id", course.id);
+        
+        console.log(`✅ Módulos do curso ${course.id}:`, modules?.length);
+        
+        // Para cada módulo, buscar vídeos
+        const modulesWithVideos = await Promise.all(
+          (modules || []).map(async (module) => {
+            const { data: videos } = await supabase
+              .from("videos")
+              .select("id, title, url, duration, order_index, created_at")
+              .eq("module_id", module.id);
+            
+            return { ...module, videos: videos || [] };
+          })
+        );
+        
+        return { ...course, modules: modulesWithVideos };
+      })
+    );
+
+    console.log('✅ Resposta final:', JSON.stringify(coursesWithModules, null, 2));
+
     res.status(200).json({
-      status: 'success',
-      message: 'Cursos carregados com sucesso',
-      data: data
+      status: "success",
+      message: "Cursos carregados com sucesso",
+      data: coursesWithModules
     });
-  } catch (err) {
-    res.status(500).json({ 
-      status: 'error',
-      message: "Erro interno no servidor" 
-    });
+  } catch (error) {
+    console.error('❌ Erro ao buscar cursos:', error);
+    res.status(500).json({ status: "error", message: "Erro ao buscar cursos" });
   }
-}
+};
