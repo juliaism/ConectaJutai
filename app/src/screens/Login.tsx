@@ -21,76 +21,67 @@ export default function LoginScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (phone.trim() === "" || password.trim() === "") {
-      Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
+  if (phone.trim() === "" || password.trim() === "") {
+    Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    console.log("🔵 Iniciando login...");
+    console.log("📱 Telefone:", phone);
+    console.log("🔐 Senha:", password);
+
+    const response = await axios.post(
+      "http://192.168.86.40:3000/auth/login",
+      { phone, password },
+      { timeout: 10000 }
+    );
+
+    console.log("✅ Resposta da API:", response.data);
+
+    if (!response.data.token) {
+      console.log("❌ Token não encontrado na resposta");
+      Alert.alert("Erro", "Servidor não retornou um token válido");
       return;
     }
 
-    try {
-      setLoading(true);
+    const token = response.data.token;
+    console.log("🔑 Token recebido:", token);
 
-      console.log("Tentando fazer login com:", { phone, password });
+    await AsyncStorage.setItem("token", token);
+    console.log("💾 Token salvo no AsyncStorage");
 
-      // ✅ Fazer login na API
-      const response = await axios.post(
-        "http://192.168.86.40:3000/api/login",
-        {
-          phone,
-          password
-        },
-        {
-          timeout: 10000 // 10 segundos de timeout
-        }
-      );
+    Alert.alert("Sucesso", "Login realizado com sucesso!");
 
-      console.log("Resposta da API:", response.data);
+  } catch (error: any) {
+    console.log("❌ ERRO CAPTURADO:", error);
+    console.log("Tipo de erro:", error.constructor.name);
+    console.log("Mensagem:", error.message);
 
-      // ✅ Verificar se a resposta tem token
-      if (!response.data.token) {
-        Alert.alert("Erro", "Servidor não retornou um token válido");
-        return;
-      }
-
-      const token = response.data.token;
-
-      // ✅ Salvar o token CORRETO da API
-      await AsyncStorage.setItem("token", token);
-
-      console.log("Token salvo com sucesso:", token);
-
-      // ✅ O Navigation vai detectar automaticamente que tem token
-      // e mostrar AppTabs em vez de AuthStack
-
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
-
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
-
-      // ✅ Mostrar erro detalhado
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // Servidor respondeu com erro
-          console.error("Erro da API:", error.response.data);
-          Alert.alert(
-            "Erro",
-            error.response.data?.message || "Falha ao fazer login. Verifique suas credenciais."
-          );
-        } else if (error.request) {
-          // Requisição foi feita mas não recebeu resposta
-          console.error("Sem resposta do servidor");
-          Alert.alert("Erro", "Não foi possível conectar ao servidor. Verifique sua internet.");
-        } else {
-          // Erro ao configurar a requisição
-          console.error("Erro na requisição:", error.message);
-          Alert.alert("Erro", "Erro ao processar login");
-        }
+    if (axios.isAxiosError(error)) {
+      console.log("É um erro Axios");
+      
+      if (error.response) {
+        console.log("Status:", error.response.status);
+        console.log("Dados:", error.response.data);
+        Alert.alert("Erro", error.response.data?.message || "Credenciais inválidas");
+      } else if (error.request) {
+        console.log("Nenhuma resposta do servidor");
+        Alert.alert("Erro", "Servidor não respondeu. Verifique sua internet.");
       } else {
-        Alert.alert("Erro", "Erro desconhecido ao fazer login");
+        console.log("Erro na configuração:", error.message);
+        Alert.alert("Erro", error.message);
       }
-    } finally {
-      setLoading(false);
+    } else {
+      console.log("Erro desconhecido:", error);
+      Alert.alert("Erro", "Erro desconhecido");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <View style={styles.container}>

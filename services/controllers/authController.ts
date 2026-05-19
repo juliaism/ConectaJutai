@@ -12,31 +12,38 @@ export async function signup(req: Request, res: Response) {
   if (!phone || !password) {
     return res.status(400).json({ error: "Preencha os campos obrigatórios" });
   }
+
   if (!/^\d{9}$/.test(phone)) {
     return res.status(400).json({ error: "Telefone deve ter 9 números" });
   }
+
   if (!/^\d{8}$/.test(password)) {
-  return res.status(400).json({ error: "Senha deve ter 8 números" });
+    return res.status(400).json({ error: "Senha deve ter 8 números" });
   }
 
   try {
-      const { data: existingUser, error: checkError } = await supabase
+    // ✅ CORRIGIDO: Verificar se o usuário já existe
+    const { data: existingUser } = await supabase
       .from("users")
       .select("phone")
-      .eq("phone", phone)
-      .single();
-      if (existingUser) {
-      return res.status(400).json({ error: "Telefone já cadastrado" });
-      } 
+      .eq("phone", phone);
 
+    if (existingUser && existingUser.length > 0) {
+      return res.status(400).json({ error: "Telefone já cadastrado" });
+    }
+
+    // ✅ Hash da senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ Inserir o novo usuário
     const { data, error } = await supabase
       .from("users")
       .insert([{ phone, password_hash: hashedPassword }])
       .select();
 
-    if (error) return res.status(400).json({ error: error.message });
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
 
     return res
       .status(201)
@@ -46,7 +53,6 @@ export async function signup(req: Request, res: Response) {
     return res.status(500).json({ error: "Erro interno no servidor" });
   }
 }
-
 export async function login(req: Request, res: Response) {
   const { phone, password } = req.body as { phone: string; password: string };
 
