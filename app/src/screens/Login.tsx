@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type RootStackParamList = {
   Login: undefined;
@@ -17,15 +19,29 @@ export default function LoginScreen({ navigation }: Props) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (phone.trim() === "" || password.trim() === "") {
-      Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
-      return;
-    }
+ const handleLogin = async () => {
+  if (phone.trim() === "" || password.trim() === "") {
+    Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
+    return;
+  }
 
-    // Abre o grupo de abas direto com foco nos Guias
-    navigation.navigate("(tabs)" as any, { screen: "guias" });
-  };
+  try {
+    // ✅ Fazer login na API (se tiver)
+    const response = await axios.post('http://192.168.86.40:3000/api/login', {
+    phone,
+    password
+    });
+     const token = response.data.token;
+
+   
+    await AsyncStorage.setItem("token", "seu_token_aqui");
+
+ 
+
+  } catch (error) {
+    Alert.alert("Erro", "Falha ao fazer login");
+  }
+};
 
   return (
     <View style={styles.container}>

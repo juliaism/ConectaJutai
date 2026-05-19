@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import axios from 'axios';
-import { downloadGuideService } from '../service/downloadGuiasService';
-
 
 interface Course {
   id: string;
   title: string;
   description: string;
-  imageurl: string;   
-  videourl: string;  
+  videourl: string;
   modules: any[];
 }
 
@@ -28,32 +25,28 @@ export default function GuiasScreen() {
     checkDownloadedCourses();
   }, []);
 
-
   const loadCourses = async () => {
-  try {
-    setLoading(true);
-    
-    const response = await axios.get('http://192.168.86.40:3000/api/courses', {
-      timeout: 15000
-    });
+    try {
+      setLoading(true);
+      const response = await axios.get('http://192.168.86.40:3000/api/courses', {
+        timeout: 15000
+      });
 
-    console.log('Cursos carregados:', response.data);
-    
-    const coursesArray = response.data.data || [];
-    setCourses(coursesArray);
-    
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
-      Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
-    } else {
-      console.error('Erro ao carregar cursos:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os cursos');
+      console.log('Cursos carregados:', response.data);
+      const coursesArray = response.data.data || [];
+      setCourses(coursesArray);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
+        Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
+      } else {
+        console.error('Erro ao carregar cursos:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os cursos');
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};  
-   
+  };
+
   const checkDownloadedCourses = async () => {
     try {
       const downloaded = await AsyncStorage.getItem('downloadedCourses');
@@ -65,42 +58,60 @@ export default function GuiasScreen() {
     }
   };
 
-const downloadCourse = async (course: Course) => {
-  if (!course.videourl) {
-    console.error('VideoUrl não encontrada:', course);
-    Alert.alert('Erro', 'URL do vídeo não disponível para este curso');
-    return;
-  }
+  const downloadCourse = async (course: Course) => {
+    if (!course.videourl) {
+      console.error('VideoUrl não encontrada:', course);
+      Alert.alert('Erro', 'URL do vídeo não disponível para este curso');
+      return;
+    }
 
-  try {
-    setDownloadingCourseId(course.id);
-    setDownloadProgress(0);
+    try {
+      setDownloadingCourseId(course.id);
+      setDownloadProgress(0);
 
-    const guideData = {
-      id: course.id,
-      titulo: course.title,
-      texto: course.description,
-      videoPath: course.videourl,
-      videoSize: 0,
-      downloadedAt: new Date().toISOString()
-    };
+      const courseDir = `${FileSystem.documentDirectory}courses/${course.id}`;
+      await FileSystem.makeDirectoryAsync(courseDir, { intermediates: true });
 
-    await downloadGuideService.downloadGuide(guideData, (progress) => {
-      setDownloadProgress(progress / 100);
-    });
+      const videoFileName = `${course.id}_video.mp4`;
+      const videoPath = `${courseDir}/${videoFileName}`;
 
-    const updatedDownloaded = [...downloadedCourses, course.id];
-    setDownloadedCourses(updatedDownloaded);
+      const downloadResumable = FileSystem.createDownloadResumable(
+        course.videourl,
+        videoPath,
+        {},
+        (downloadProgress) => {
+          const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+          setDownloadProgress(progress);
+        }
+      );
 
-    Alert.alert('Sucesso', `${course.title} foi baixado com sucesso!`);
-  } catch (error) {
-    console.error('Erro ao baixar curso:', error);
-    Alert.alert('Erro', 'Erro ao baixar o curso. Tente novamente.');
-  } finally {
-    setDownloadingCourseId(null);
-    setDownloadProgress(0);
-  }
-};
+      await downloadResumable.downloadAsync();
+
+      // ✅ Salvar curso com módulos
+      const courseMetadata = {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        videoPath: videoPath,
+        modules: course.modules || [],
+        downloadedAt: new Date().toISOString()
+      };
+
+      await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(courseMetadata));
+
+      const updatedDownloaded = [...downloadedCourses, course.id];
+      await AsyncStorage.setItem('downloadedCourses', JSON.stringify(updatedDownloaded));
+      setDownloadedCourses(updatedDownloaded);
+
+      Alert.alert('Sucesso', `${course.title} foi baixado com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao baixar curso:', error);
+      Alert.alert('Erro', 'Erro ao baixar o curso. Tente novamente.');
+    } finally {
+      setDownloadingCourseId(null);
+      setDownloadProgress(0);
+    }
+  };
 
   if (loading) {
     return (
@@ -116,40 +127,34 @@ const downloadCourse = async (course: Course) => {
 
       {courses.map((course) => (
         <View key={course.id} style={styles.courseCard}>
-          <Image
-            source={{ uri: course.imageurl }}
-            style={styles.courseImage}
-          />
+          {/* ✅ SEM IMAGEM - APENAS TEXTO */}
+          <Text style={styles.courseTitle}>{course.title}</Text>
+          <Text style={styles.courseDescription}>{course.description}</Text>
 
-          <View style={styles.courseContent}>
-            <Text style={styles.courseTitle}>{course.title}</Text>
-            <Text style={styles.courseDescription}>{course.description}</Text>
-
-            {downloadingCourseId === course.id ? (
-              <View style={styles.downloadProgressContainer}>
-                <View style={[styles.downloadProgressBar, { width: `${downloadProgress * 100}%` }]} />
-              </View>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.downloadButton,
-                  downloadedCourses.includes(course.id) && styles.downloadButtonDisabled
-                ]}
-                onPress={() => downloadCourse(course)}
-                disabled={downloadedCourses.includes(course.id)}
-              >
-                <Ionicons
-                  name={downloadedCourses.includes(course.id) ? 'checkmark-circle' : 'download'}
-                  size={20}
-                  color="#FFF"
-                  style={{ marginRight: 8 }}
-                />
-                <Text style={styles.downloadButtonText}>
-                  {downloadedCourses.includes(course.id) ? '✅ Baixado' : '📥 Baixar'}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          {downloadingCourseId === course.id ? (
+            <View style={styles.downloadProgressContainer}>
+              <View style={[styles.downloadProgressBar, { width: `${downloadProgress * 100}%` }]} />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={[
+                styles.downloadButton,
+                downloadedCourses.includes(course.id) && styles.downloadButtonDisabled
+              ]}
+              onPress={() => downloadCourse(course)}
+              disabled={downloadedCourses.includes(course.id)}
+            >
+              <Ionicons
+                name={downloadedCourses.includes(course.id) ? 'checkmark-circle' : 'download'}
+                size={20}
+                color="#FFF"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={styles.downloadButtonText}>
+                {downloadedCourses.includes(course.id) ? '✅ Baixado' : '📥 Baixar'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       ))}
 
@@ -174,17 +179,11 @@ const styles = StyleSheet.create({
   courseCard: {
     backgroundColor: '#FFF',
     borderRadius: 12,
-    overflow: 'hidden',
+    padding: 20,
     marginBottom: 20,
-    elevation: 3
-  },
-  courseImage: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#ECF0F1'
-  },
-  courseContent: {
-    padding: 15
+    elevation: 3,
+    borderLeftWidth: 6,
+    borderLeftColor: '#27AE60'
   },
   courseTitle: {
     fontSize: 18,
@@ -203,12 +202,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderRadius: 8,
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center'
   },
   downloadButtonDisabled: {
-    backgroundColor: '#95A5A6',
+    backgroundColor: '#BDC3C7',
     opacity: 0.6
   },
   downloadButtonText: {
