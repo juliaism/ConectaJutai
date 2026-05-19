@@ -23,40 +23,60 @@ export default function JornadaScreen({ navigation }: any) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState('456');
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
 
   useEffect(() => {
     loadCourses();
   }, []);
 
   const loadCourses = async () => {
-  try {
-    setLoading(true);
-    
-    const response = await fetch('http://192.168.86.40:3000/api/courses', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
+    try {
+      setLoading(true);
+      const response = await fetch('http://192.168.86.40:3000/api/courses', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-    if (response.ok) {
-      const response_data = await response.json();
-      console.log('Cursos carregados:', response_data);
-
-      const coursesArray = response_data.data || [];
-      setCourses(coursesArray);
-    } else {
-      Alert.alert('Erro', 'Não foi possível carregar os cursos');
+      if (response.ok) {
+        const response_data = await response.json();
+        console.log('Cursos carregados:', response_data);
+        const coursesArray = response_data.data || [];
+        setCourses(coursesArray);
+      } else {
+        Alert.alert('Erro', 'Não foi possível carregar os cursos');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar cursos:', error);
+      Alert.alert('Erro', 'Erro ao conectar com o servidor');
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('Erro ao carregar cursos:', error);
-    Alert.alert('Erro', 'Erro ao conectar com o servidor');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-  const handleAccessModule = (module: Module, courseTitle: string) => {
-    if (module.status === 'locked') {
-      Alert.alert('Módulo Bloqueado', 'Complete o módulo anterior para desbloquear este.');
+  const toggleCourseExpand = (courseId: string) => {
+    setExpandedCourseId(expandedCourseId === courseId ? null : courseId);
+  };
+
+  // ✅ Verificar se o módulo anterior foi concluído
+  const isModuleUnlocked = (modules: Module[], currentIndex: number): boolean => {
+    if (currentIndex === 0) return true; // Iniciante sempre desbloqueado
+    
+    const previousModule = modules[currentIndex - 1];
+    return previousModule?.status === 'completed';
+  };
+
+  // ✅ Obter mensagem de desbloqueio
+  const getUnlockMessage = (modules: Module[], currentIndex: number): string => {
+    if (currentIndex === 0) return '';
+    
+    const previousModule = modules[currentIndex - 1];
+    return `Desbloqueado após terminar ${previousModule?.level}`;
+  };
+
+  const handleAccessModule = (module: Module, courseTitle: string, modules: Module[], moduleIndex: number) => {
+    // ✅ Verificar se está desbloqueado
+    if (!isModuleUnlocked(modules, moduleIndex)) {
+      Alert.alert('Módulo Bloqueado', getUnlockMessage(modules, moduleIndex));
       return;
     }
 
@@ -67,32 +87,6 @@ export default function JornadaScreen({ navigation }: any) {
       nextModuleId: module.nextModuleId,
       moduleTitle: `${courseTitle} - ${module.level}`
     });
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Ionicons name="checkmark-circle" size={20} color="#27AE60" />;
-      case 'in_progress':
-        return <Ionicons name="time" size={20} color="#F39C12" />;
-      case 'locked':
-        return <Ionicons name="lock-closed" size={20} color="#95A5A6" />;
-      default:
-        return null;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'Concluído';
-      case 'in_progress':
-        return 'Em Progresso';
-      case 'locked':
-        return 'Bloqueado';
-      default:
-        return '';
-    }
   };
 
   if (loading) {
@@ -108,41 +102,58 @@ export default function JornadaScreen({ navigation }: any) {
       <Text style={styles.title}>Minha Jornada</Text>
 
       {courses.map((course) => (
-        <View key={course.id} style={styles.courseCard}>
-          <Text style={styles.courseTitle}>{course.title}</Text>
-          <Text style={styles.courseDescription}>{course.description}</Text>
-
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, { width: `${course.progress}%` }]} />
-          </View>
-          <Text style={styles.progressText}>{Math.round(course.progress)}% concluído</Text>
-
-          {course.modules.map((module) => (
-            <View key={module.id} style={styles.moduleCard}>
-              <View style={styles.moduleHeader}>
-                <View style={styles.moduleInfo}>
-                  {getStatusIcon(module.status)}
-                  <View style={{ marginLeft: 10, flex: 1 }}>
-                    <Text style={styles.moduleTitle}>{module.level}</Text>
-                    <Text style={styles.moduleStatus}>{getStatusText(module.status)}</Text>
-                  </View>
+        <View key={course.id}>
+          {/* CARD COLAPSÁVEL */}
+          <TouchableOpacity
+            style={styles.courseCard}
+            onPress={() => toggleCourseExpand(course.id)}
+          >
+            <View style={styles.courseCardContent}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.courseTitle}>{course.title}</Text>
+                <View style={styles.progressContainer}>
+                  <View style={[styles.progressBar, { width: `${course.progress}%` }]} />
                 </View>
+                <Text style={styles.progressText}>{Math.round(course.progress)}% concluído</Text>
               </View>
-
-              <TouchableOpacity
-                style={[
-                  styles.accessButton,
-                  module.status === 'locked' && styles.accessButtonDisabled
-                ]}
-                onPress={() => handleAccessModule(module, course.title)}
-                disabled={module.status === 'locked'}
-              >
-                <Text style={styles.accessButtonText}>
-                  {module.status === 'locked' ? 'Bloqueado' : 'Acessar'}
-                </Text>
-              </TouchableOpacity>
+              <Ionicons
+                name={expandedCourseId === course.id ? 'chevron-up' : 'chevron-down'}
+                size={24}
+                color="#27AE60"
+              />
             </View>
-          ))}
+          </TouchableOpacity>
+
+          {/* MÓDULOS EXPANDIDOS */}
+          {expandedCourseId === course.id && (
+            <View style={styles.modulesContainer}>
+              {course.modules.map((module, index) => {
+                const isUnlocked = isModuleUnlocked(course.modules, index);
+                const unlockMessage = getUnlockMessage(course.modules, index);
+
+                return (
+                  <View key={module.id} style={styles.moduleCard}>
+                    {/* APENAS NÍVEL */}
+                    <Text style={styles.moduleLevelText}>{module.level}</Text>
+
+                    {/* BOTÃO DE ACESSO */}
+                    <TouchableOpacity
+                      style={[
+                        styles.accessButton,
+                        !isUnlocked && styles.accessButtonDisabled
+                      ]}
+                      onPress={() => handleAccessModule(module, course.title, course.modules, index)}
+                      disabled={!isUnlocked}
+                    >
+                      <Text style={styles.accessButtonText}>
+                        {isUnlocked ? 'Acessar' : unlockMessage}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </View>
+          )}
         </View>
       ))}
 
@@ -168,22 +179,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 10,
     elevation: 3,
     borderLeftWidth: 6,
     borderLeftColor: '#27AE60'
   },
+  courseCardContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   courseTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#2C3E50',
-    marginBottom: 8
-  },
-  courseDescription: {
-    fontSize: 14,
-    color: '#7F8C8D',
-    marginBottom: 15,
-    lineHeight: 20
+    marginBottom: 12
   },
   progressContainer: {
     height: 8,
@@ -200,37 +210,32 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
     color: '#7F8C8D',
-    marginBottom: 15,
     fontWeight: '500'
   },
-  moduleCard: {
+  modulesContainer: {
     backgroundColor: '#F8F9FA',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    marginLeft: 10,
+    marginRight: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#27AE60'
+  },
+  moduleCard: {
+    backgroundColor: '#FFF',
     borderRadius: 8,
     padding: 12,
     marginBottom: 10,
     borderLeftWidth: 4,
     borderLeftColor: '#27AE60'
   },
-  moduleHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10
-  },
-  moduleInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1
-  },
-  moduleTitle: {
+  moduleLevelText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2C3E50'
-  },
-  moduleStatus: {
-    fontSize: 12,
-    color: '#95A5A6',
-    marginTop: 2
+    color: '#2C3E50',
+    marginBottom: 10,
+    textAlign: 'center'
   },
   accessButton: {
     backgroundColor: '#27AE60',
