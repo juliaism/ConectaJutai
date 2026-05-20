@@ -10,5 +10,7 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true
-  }
+  },
+  "include": ["app"],
+  "exclude": ["node_modules"]
 }
