@@ -10,17 +10,20 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 • 🔄 Sincronização Automática — Progresso sincronizado com o servidor quando a internet retorna<br>
 
 ### 🛠️ Tecnologias Utilizadas
-
-| Tecnologia | Tipo | Descrição | 
+| Tecnologia | Tipo | Descrição |
 |---|---|---|
-| **React Native e Expo** | Framework | Framework para desenvolvimento mobile multiplataforma |
+| **React Native** | Framework | Framework para desenvolvimento mobile multiplataforma |
+| **Expo** | Toolchain | Conjunto de ferramentas para facilitar desenvolvimento React Native |
 | **TypeScript** | Linguagem | Superset do JavaScript com tipagem estática |
-| **Supabase** | Backend & BD | Plataforma open-source com PostgreSQL |
+| **Supabase** | Backend & Banco de Dados | Plataforma open-source com PostgreSQL |
 | **AsyncStorage** | Armazenamento Local | Persistência de dados no dispositivo |
 | **Axios** | HTTP Client | Biblioteca para fazer requisições HTTP |
 | **React Navigation** | Navegação | Gerencia rotas e navegação |
 | **Node.js** | Runtime | Ambiente de execução JavaScript |
 | **Express.js** | Framework Backend | Framework para criar APIs REST |
+| **JWT** | Autenticação | Tokens para autenticação sem estado |
+| **bcrypt** | Segurança | Criptografia de senhas |
+| **JSONB** | Armazenamento | Armazenamento flexível de dados estruturados |
 
 ### 📁 **Estrutura do Projeto**<br>
 ```
@@ -32,7 +35,7 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 ### 🔐 **Autenticação**<br>
 A segurança do usuário é garantida por um sistema de credenciais simplificado e rigoroso:<br>
 • 📱 Identificador: Telefone celular (exatamente 9 dígitos)<br>
-• 🔑 Credencial: Senha numérica<br>
+• 🔑 Credencial: Senha (exatamente 8 dígitos)<br>
 • 🛡️ Segurança: As senhas são criptografadas utilizando bcrypt antes de serem armazenadas no banco de dados<br>
 
 ### 📊 **Rastreamento de Progresso**<br>

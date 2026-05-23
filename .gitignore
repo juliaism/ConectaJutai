@@ -48,3 +48,6 @@ yarn-error.*
 
 # temporarios
 tmp/
+
+# Arquivos específicos
+app\src\configApi\api.ts
