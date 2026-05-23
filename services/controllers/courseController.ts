@@ -9,9 +9,8 @@ const supabase = createClient(
 
 export const getCourses = async (req: Request, res: Response) => {
   try {
-    console.log('🔵 Buscando cursos do Supabase...');
-    
-    // Buscar apenas cursos
+    console.log('Buscando cursos do Supabase...');
+
     const { data: courses, error: coursesError } = await supabase
       .from("courses")
       .select("id, title, description, level, unlocked, created_at");
@@ -20,11 +19,10 @@ export const getCourses = async (req: Request, res: Response) => {
     console.log('📊 Cursos:', courses);
     
     if (coursesError) {
-      console.error('❌ Erro ao buscar cursos:', coursesError);
+      console.error('Erro ao buscar cursos:', coursesError);
       return res.status(500).json({ status: "error", message: coursesError.message });
     }
 
-    // Para cada curso, buscar módulos e vídeos
     const coursesWithModules = await Promise.all(
       (courses || []).map(async (course) => {
         const { data: modules } = await supabase
@@ -32,9 +30,8 @@ export const getCourses = async (req: Request, res: Response) => {
           .select("id, title, level, order_index, created_at")
           .eq("course_id", course.id);
         
-        console.log(`✅ Módulos do curso ${course.id}:`, modules?.length);
-        
-        // Para cada módulo, buscar vídeos
+        console.log(`Módulos do curso ${course.id}:`, modules?.length);
+    
         const modulesWithVideos = await Promise.all(
           (modules || []).map(async (module) => {
             const { data: videos } = await supabase
@@ -58,7 +55,7 @@ export const getCourses = async (req: Request, res: Response) => {
       data: coursesWithModules
     });
   } catch (error) {
-    console.error('❌ Erro ao buscar cursos:', error);
+    console.error('Erro ao buscar cursos:', error);
     res.status(500).json({ status: "error", message: "Erro ao buscar cursos" });
   }
 };
