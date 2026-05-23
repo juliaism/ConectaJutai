@@ -8,7 +8,7 @@ import api from "../configApi/api";
 type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
-  Courses: undefined;
+  Guia: undefined;
   ResetPassword: undefined;
 };
 
@@ -30,10 +30,6 @@ export default function LoginScreen({ navigation }: Props) {
   try {
     setLoading(true);
 
-    console.log("🔵 Iniciando login...");
-    console.log("📱 Telefone:", phone);
-    console.log("🔐 Senha:", password);
-
     const response = await api.post(
       "/api/auth/login",
       { phone, password },
@@ -52,7 +48,7 @@ export default function LoginScreen({ navigation }: Props) {
     console.log("Token recebido:", token);
 
     await AsyncStorage.setItem("token", token);
-    navigation.navigate("Courses");
+    navigation.navigate("Guia")
     console.log("Token salvo no AsyncStorage");
 
     Alert.alert("Sucesso", "Login realizado com sucesso!");
