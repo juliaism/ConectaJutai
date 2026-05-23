@@ -1,14 +1,13 @@
 import React from "react";
-import { NavigationContainer, NavigatorScreenParams} from "@react-navigation/native";
+import { NavigationContainer, NavigatorScreenParams } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
 import ProfileScreen from "../screens/Perfil";
-import ResetPasswordScreen from "../screens/ResetPassowrd";
+import ResetPasswordScreen from "../screens/ResetPassowrd"; // Mantido conforme o seu arquivo físico atual
 import JornadaScreen from "../screens/Jornada";
 import GuiasScreen from "../screens/Guia";
 import DownloadsScreen from "../screens/Download";
@@ -26,7 +25,7 @@ export type JornadaStackParamList = {
 };
 
 export type AppTabsParamList = {
-  Guia: undefined;
+  Guias: undefined;
   Jornada: NavigatorScreenParams<JornadaStackParamList>;
   Download: undefined;
   Profile: undefined;
@@ -35,12 +34,15 @@ export type AppTabsParamList = {
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AuthStack() {
+// 🎯 CORREÇÃO: AuthStack agora recebe o controle de login e repassa para a tela de Login
+function AuthStack({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false,}}>
-      <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login">
+        {(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+      </Stack.Screen>
       <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="ResetPassword" component={(ResetPasswordScreen)} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 }
@@ -123,7 +125,8 @@ type NavigationProps = {
 export default function Navigation({ isLoggedIn, setIsLoggedIn }: NavigationProps) {
   return (
     <NavigationContainer>
-      {isLoggedIn ? <AppTabs /> : <AuthStack />}
+      {/* 🎯 CORREÇÃO: Passando o gatilho de login para o fluxo de autenticação */}
+      {isLoggedIn ? <AppTabs /> : <AuthStack setIsLoggedIn={setIsLoggedIn} />}
     </NavigationContainer>
   );
 }
