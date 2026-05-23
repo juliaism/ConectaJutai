@@ -1,13 +1,11 @@
 import express from 'express';
 import type { Request, Response } from 'express';
-import dotenv from "dotenv";
+import 'dotenv/config'
 
 import authRoutes from "./routes/auth.ts";
 import courseRoutes from "./routes/course.ts";
 import progressRoutes from "./routes/progress.ts";
 
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCourses, getCourseById, createCourse, updateCourse } from '../controllers/courseController';
+import { getCourses, getCourseById, createCourse, updateCourse } from '../controllers/courseController.ts';
 
 const router = express.Router();
 

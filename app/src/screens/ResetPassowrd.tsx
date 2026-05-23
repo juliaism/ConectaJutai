@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import axios from "axios";
 import api from "../configApi/api";
 
 type RootStackParamList = {

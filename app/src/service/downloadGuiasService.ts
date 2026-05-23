@@ -1,6 +1,5 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 
 export interface GuideData {
   id: string;

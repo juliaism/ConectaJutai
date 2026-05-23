@@ -25,11 +25,25 @@ export default function GuiasScreen() {
     checkDownloadedCourses();
   }, []);
 
- const loadCourses = async () => {
+  const loadCourses = async () => {
   try {
     setLoading(true);
     const response = await api.get('/api/courses', { timeout: 15000 });
-    const coursesArray = response.data.data || [];
+    
+    console.log('API Response:', response.data);
+    console.log('Type:', typeof response.data);
+
+    let coursesArray = [];
+    if (Array.isArray(response.data)) {
+      coursesArray = response.data;
+    } else if (response.data && Array.isArray(response.data.data)) {
+      coursesArray = response.data.data;
+    } else {
+      console.warn('Estrutura inesperada:', response.data);
+      coursesArray = [];
+    }
+    
+    console.log('Cursos carregados:', coursesArray.length);
     setCourses(coursesArray);
   } catch (error) {
     if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
@@ -42,7 +56,7 @@ export default function GuiasScreen() {
     setLoading(false);
   }
 };
-
+ 
   const checkDownloadedCourses = async () => {
     try {
       const downloaded = await AsyncStorage.getItem('downloadedCourses');
@@ -55,12 +69,12 @@ export default function GuiasScreen() {
   };
 
   const downloadCourse = async (course: Course) => {
-     console.log('📦 Curso completo:', JSON.stringify(course, null, 2));
-  console.log('📚 Módulos:', course.modules);
-  console.log('📹 Total de vídeos:', course.modules?.reduce((acc, m) => acc + (m.videos?.length || 0), 0));
-  if (!course || !course.modules) {
-    Alert.alert('Erro', 'Curso inválido');
-    return;
+      console.log('Curso completo:', JSON.stringify(course, null, 2));
+      console.log('Módulos:', course.modules);
+      console.log('Total de vídeos:', course.modules?.reduce((acc, m) => acc + (m.videos?.length || 0), 0));
+      if (!course || !course.modules) {
+        Alert.alert('Erro', 'Curso inválido');
+         return;
   }
 
   const totalVideos = course.modules.reduce((acc, mod) => acc + (mod.videos?.length || 0), 0);

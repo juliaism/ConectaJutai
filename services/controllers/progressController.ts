@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import supabase from '../config/supabaseClient';
+import type { Request, Response } from 'express';
+import supabase from '../config/supabaseClient.ts';
 
 export async function checkAndUnlockNextModule(userId: string, courseId: string, moduleId: string): Promise<void> {
   try {

@@ -1,5 +1,5 @@
 import express from 'express';
-import { saveProgress, syncProgress, getCourseProgress } from '../controllers/progressController';
+import { saveProgress, syncProgress, getCourseProgress } from '../controllers/progressController.ts';
 
 const router = express.Router();
 

@@ -5,6 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { JornadaStackParamList } from '../navigation/Navigation';
+import api from '../configApi/api';
 
 
 interface ModuleScreenParams {
@@ -55,20 +56,14 @@ export default function ModuleScreen() {
 
   const sendProgressToBackend = async (progressPercentage: number) => {
     try {
-      const response = await fetch('http://localhost:3000/api/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const response = await api.post('/api/progress', {
           userId,
           moduleId,
           progress: progressPercentage,
           timestamp: new Date().toISOString()
-        })
-      });
+        });
 
-      if (!response.ok) {
-        console.error('Erro ao enviar progresso:', response.status);
-      }
+      console.log('Progresso enviado:', response.data);
     } catch (error) {
       console.error('Erro ao enviar progresso:', error);
     }
@@ -78,17 +73,12 @@ export default function ModuleScreen() {
     try {
       setIsCompleting(true);
 
-      const response = await fetch('http://localhost:3000/api/modules/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const response = await api.post('/api/modules/complete', {
           userId,
           moduleId,
           completedAt: new Date().toISOString()
-        })
-      });
+        });
 
-      if (response.ok) {
         Alert.alert('Sucesso', 'Módulo concluído com sucesso!', [
           {
             text: 'OK',
@@ -106,9 +96,6 @@ export default function ModuleScreen() {
             }
           }
         ]);
-      } else {
-        Alert.alert('Erro', 'Não foi possível concluir o módulo');
-      }
     } catch (error) {
       console.error('Erro ao concluir módulo:', error);
       Alert.alert('Erro', 'Erro ao conectar com o servidor');

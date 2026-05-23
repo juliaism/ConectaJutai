@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
 import ProfileScreen from "../screens/Perfil";
-import ResetPasswordScreen from "../screens/ResetPassowrd"; // Mantido conforme o seu arquivo físico atual
+import ResetPasswordScreen from "../screens/ResetPassowrd";
 import JornadaScreen from "../screens/Jornada";
 import GuiasScreen from "../screens/Guia";
 import DownloadsScreen from "../screens/Download";
@@ -34,7 +34,6 @@ export type AppTabsParamList = {
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 🎯 CORREÇÃO: AuthStack agora recebe o controle de login e repassa para a tela de Login
 function AuthStack({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -125,7 +124,6 @@ type NavigationProps = {
 export default function Navigation({ isLoggedIn, setIsLoggedIn }: NavigationProps) {
   return (
     <NavigationContainer>
-      {/* 🎯 CORREÇÃO: Passando o gatilho de login para o fluxo de autenticação */}
       {isLoggedIn ? <AppTabs /> : <AuthStack setIsLoggedIn={setIsLoggedIn} />}
     </NavigationContainer>
   );

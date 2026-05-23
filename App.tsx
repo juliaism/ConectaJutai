@@ -12,10 +12,10 @@ export default function App() {
     const checkToken = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        console.log("🔑 Token encontrado:", !!token);
+        console.log("Token encontrado:", !!token);
         setIsLoggedIn(!!token);
       } catch (error) {
-        console.error("❌ Erro ao verificar token:", error);
+        console.error("Erro ao verificar token:", error);
         setIsLoggedIn(false);
       } finally {
         setLoading(false);

@@ -30,9 +30,9 @@ export default function LoginScreen({ navigation, setIsLoggedIn }: Props) {
     try {
       setLoading(true);
 
-      console.log("🔵 Iniciando login...");
-      console.log("📱 Telefone:", phone);
-      console.log("🔐 Senha:", password);
+      console.log("Iniciando login...");
+      console.log("Telefone:", phone);
+      console.log("Senha:", password);
 
       const response = await api.post(
         "/api/auth/login",
@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation, setIsLoggedIn }: Props) {
         { timeout: 10000 }
       );
 
-      console.log("✅ Resposta da API:", response.data);
+      console.log("Resposta da API:", response.data);
 
       if (!response.data.token) {
         console.log("Token não encontrado na resposta");
@@ -54,8 +54,7 @@ export default function LoginScreen({ navigation, setIsLoggedIn }: Props) {
       await AsyncStorage.setItem("token", token);
       console.log("Token salvo no AsyncStorage");
 
-      // 🎯 A MÁGICA: Em vez de navigation.navigate, usamos o estado global que joga pra tela de Guias!
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
+      Alert.alert("Sucesso", "Login realizado com sucesso");
       setIsLoggedIn(true);
 
     } catch (error: any) {

@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import supabase from '../config/supabaseClient';
+import type { Request, Response } from 'express';
+import supabase from '../config/supabaseClient.ts';
 
 export const getCourses = async (req: Request, res: Response): Promise<void> => {
   try {
