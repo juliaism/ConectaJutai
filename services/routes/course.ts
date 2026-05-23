@@ -3,12 +3,9 @@ import { getCourses, getCourseById, createCourse, updateCourse } from '../contro
 
 const router = express.Router();
 
-router.get('/courses', getCourses);
-
-router.get('/courses/:id', getCourseById);
-
-router.post('/courses', createCourse);
-
-router.put('/courses/:id', updateCourse);
+router.get('/', getCourses);         
+router.get('/:id', getCourseById);   
+router.post('/', createCourse);    
+router.put('/:id', updateCourse);   
 
 export default router;

@@ -10,7 +10,21 @@ interface Course {
   id: string;
   title: string;
   description: string;
-  modules: any[];
+  modules: any[]
+}
+
+export interface Module {
+  id: string;
+  title: string;
+  level: 'Iniciante' | 'Intermediário' | 'Avançado';
+  status: 'locked' | 'in_progress' | 'completed';
+  videoUrl: string
+}
+
+function getLevelByIndex(index: number): 'Iniciante' | 'Intermediário' | 'Avançado' {
+  if (index <= 1) return 'Iniciante';
+  if (index <= 3) return 'Intermediário';
+  return 'Avançado';
 }
 
 export default function GuiasScreen() {
@@ -28,11 +42,12 @@ export default function GuiasScreen() {
   const loadCourses = async () => {
   try {
     setLoading(true);
-    const response = await api.get('/api/courses', { timeout: 15000 });
     
-    console.log('API Response:', response.data);
-    console.log('Type:', typeof response.data);
-
+    const response = await api.get('/api/courses', { timeout: 120000 }); 
+    
+    console.log('Resposta recebida!');
+    console.log('Dados:', response.data);
+    
     let coursesArray = [];
     if (Array.isArray(response.data)) {
       coursesArray = response.data;
@@ -43,9 +58,11 @@ export default function GuiasScreen() {
       coursesArray = [];
     }
     
-    console.log('Cursos carregados:', coursesArray.length);
+    console.log('Total de cursos:', coursesArray.length);
     setCourses(coursesArray);
   } catch (error) {
+    console.error('ERRO NA REQUISIÇÃO:', error);
+    
     if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
       Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
     } else {
@@ -56,7 +73,6 @@ export default function GuiasScreen() {
     setLoading(false);
   }
 };
- 
   const checkDownloadedCourses = async () => {
     try {
       const downloaded = await AsyncStorage.getItem('downloadedCourses');
@@ -68,49 +84,46 @@ export default function GuiasScreen() {
     }
   };
 
-  const downloadCourse = async (course: Course) => {
-      console.log('Curso completo:', JSON.stringify(course, null, 2));
-      console.log('Módulos:', course.modules);
-      console.log('Total de vídeos:', course.modules?.reduce((acc, m) => acc + (m.videos?.length || 0), 0));
-      if (!course || !course.modules) {
-        Alert.alert('Erro', 'Curso inválido');
-         return;
-  }
-
-  const totalVideos = course.modules.reduce((acc, mod) => acc + (mod.videos?.length || 0), 0);
-  if (totalVideos === 0) {
-    Alert.alert('Aviso', 'Nenhum vídeo para baixar');
+  async function downloadCourse(course: Course): Promise<void> {
+  if (!course || !course.modules) {
+    Alert.alert('Erro', 'Curso inválido ou sem módulos.');
     return;
   }
 
-  setDownloadingCourseId(course.id);
-  let videosDownloaded = 0;
+  const totalVideos = course.modules.reduce((sum, module) => sum + (module.videos?.length || 0), 0);
+
+  const structuredModules = course.modules.map((module, index) => ({
+    id: module.id || `module_${index}`,
+    title: module.title,
+    level: getLevelByIndex(index),
+    status: 'locked' as const,
+    videoUrl: module.videos?.[0]?.url || ''
+  }));
+
+  let downloadedCount = 0;
+  for (const mod of structuredModules) {
+    if (mod.videoUrl) {
+      try {
+        const fileUri = `${FileSystem.documentDirectory}videos/${mod.id}.mp4`;
+        await FileSystem.downloadAsync(mod.videoUrl, fileUri);
+        downloadedCount++;
+        const progress = Math.round((downloadedCount / totalVideos) * 100);
+        console.log(`Progresso: ${progress}%`);
+      } catch (error) {
+        Alert.alert('Download Falhou', `Falha ao baixar vídeo do módulo ${mod.title}`);
+      }
+    } else {
+      downloadedCount++;
+    }
+  }
 
   try {
-    for (const module of course.modules) {
-      if (!module.videos) continue;
-      for (const video of module.videos) {
-        const fileUri = `${FileSystem.documentDirectory}${video.id}.mp4`;
-        await FileSystem.downloadAsync(video.url, fileUri);
-        videosDownloaded++;
-        setDownloadProgress(videosDownloaded / totalVideos);
-      }
-    }
-
-    await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(course));
-
-    const updatedCourses = [...new Set([...downloadedCourses, course.id])];
-    setDownloadedCourses(updatedCourses);
-    await AsyncStorage.setItem('downloadedCourses', JSON.stringify(updatedCourses));
-
-    Alert.alert('Sucesso', 'Curso baixado com sucesso!');
+    await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(structuredModules));
+    Alert.alert('Sucesso', 'Curso baixado e salvo com sucesso!');
   } catch (error) {
-    Alert.alert('Erro', 'Falha ao baixar curso');
-  } finally {
-    setDownloadingCourseId(null);
-    setDownloadProgress(0);
+    Alert.alert('Erro', 'Falha ao salvar dados no AsyncStorage.');
   }
-};
+}
 
   if (loading) {
     return (
