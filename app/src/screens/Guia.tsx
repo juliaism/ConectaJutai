@@ -10,7 +10,6 @@ interface Course {
   id: string;
   title: string;
   description: string;
-  videourl: string;
   modules: any[];
 }
 

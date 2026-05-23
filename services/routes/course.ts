@@ -1,8 +1,14 @@
-import express, { Router } from "express";
-import { getCourses } from '../controllers/courseController.ts';
+import express from 'express';
+import { getCourses, getCourseById, createCourse, updateCourse } from '../controllers/courseController';
 
-const router: Router = express.Router();
+const router = express.Router();
 
-router.get('/', getCourses);
+router.get('/courses', getCourses);
+
+router.get('/courses/:id', getCourseById);
+
+router.post('/courses', createCourse);
+
+router.put('/courses/:id', updateCourse);
 
 export default router;

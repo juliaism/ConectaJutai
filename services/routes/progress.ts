@@ -1,10 +1,10 @@
-import express, { Router } from "express";
-import { saveProgress, syncProgress } from "../controllers/progressController.ts";
-import { authMiddleware } from "../middleware/authMiddleware.ts";
+import express from 'express';
+import { saveProgress, syncProgress, getCourseProgress } from '../controllers/progressController';
 
-const router: Router = express.Router();
+const router = express.Router();
 
-router.post("/", authMiddleware, saveProgress);
-router.post("/sync", authMiddleware, syncProgress);
+router.post('/progress', saveProgress);
+router.post('/progress/sync', syncProgress);
+router.get('/progress/:userId/:courseId', getCourseProgress);
 
 export default router;

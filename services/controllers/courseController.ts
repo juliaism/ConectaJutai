@@ -1,61 +1,106 @@
-import express from 'express';
-import type { Request, Response } from 'express';
-import { createClient } from "@supabase/supabase-js";
+import { Request, Response } from 'express';
+import supabase from '../config/supabaseClient';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL as string,
-  process.env.SUPABASE_KEY as string
-);
-
-export const getCourses = async (req: Request, res: Response) => {
+export const getCourses = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('Buscando cursos do Supabase...');
+    console.log('GET /courses called');
+    const { data, error } = await supabase
+      .from('courses')
+      .select('id, title, description, modules');
 
-    const { data: courses, error: coursesError } = await supabase
-      .from("courses")
-      .select("id, title, description, level, unlocked, created_at");
-    
-    console.log('✅ Cursos encontrados:', courses?.length);
-    console.log('📊 Cursos:', courses);
-    
-    if (coursesError) {
-      console.error('Erro ao buscar cursos:', coursesError);
-      return res.status(500).json({ status: "error", message: coursesError.message });
+    if (error) {
+      console.error('Erro ao buscar cursos:', error);
+      res.status(500).json({ error: error.message });
+      return;
     }
 
-    const coursesWithModules = await Promise.all(
-      (courses || []).map(async (course) => {
-        const { data: modules } = await supabase
-          .from("modules")
-          .select("id, title, level, order_index, created_at")
-          .eq("course_id", course.id);
-        
-        console.log(`Módulos do curso ${course.id}:`, modules?.length);
-    
-        const modulesWithVideos = await Promise.all(
-          (modules || []).map(async (module) => {
-            const { data: videos } = await supabase
-              .from("videos")
-              .select("id, title, url, duration, order_index, created_at")
-              .eq("module_id", module.id);
-            
-            return { ...module, videos: videos || [] };
-          })
-        );
-        
-        return { ...course, modules: modulesWithVideos };
-      })
-    );
+    res.status(200).json(data);
+  } catch (err) {
+    console.error('Erro geral:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+};
 
-    console.log('✅ Resposta final:', JSON.stringify(coursesWithModules, null, 2));
+export const getCourseById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    console.log(`GET /courses/${id} called`);
 
-    res.status(200).json({
-      status: "success",
-      message: "Cursos carregados com sucesso",
-      data: coursesWithModules
-    });
-  } catch (error) {
-    console.error('Erro ao buscar cursos:', error);
-    res.status(500).json({ status: "error", message: "Erro ao buscar cursos" });
+    const { data, error } = await supabase
+      .from('courses')
+      .select('id, title, description, modules')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Erro ao buscar cursos:', error);
+      res.status(404).json({ error: 'Curso não encontrado' });
+      return;
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    console.error('Erro geral:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+};
+
+export const createCourse = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { title, description, modules } = req.body;
+    console.log('POST /cursos chamado com:', { title, description, modules });
+
+    if (!title || !modules) {
+      res.status(400).json({ error: 'Título e módulos são obrigatórios' });
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('courses')
+      .insert([{ title, description, modules }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao criar curso:', error);
+      res.status(500).json({ error: error.message });
+      return;
+    }
+
+    res.status(201).json(data);
+  } catch (err) {
+    console.error('Erro geral:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+};
+
+export const updateCourse = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { title, description, modules } = req.body;
+    console.log(`PUT /courses/${id} called with:`, { title, description, modules });
+
+    if (!title && !description && !modules) {
+      res.status(400).json({ error: 'É necessário atualizar pelo menos um campo' });
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('courses')
+      .update({ title, description, modules })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao atualizar o curso:', error);
+      res.status(500).json({ error: error.message });
+      return;
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    console.error('Erro geral:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
   }
 };

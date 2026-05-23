@@ -1,106 +1,230 @@
-import express from 'express';
-import type { Request, Response } from 'express';
-import supabase from "../config/supabaseClient.ts";
+import { Request, Response } from 'express';
+import supabase from '../config/supabaseClient';
 
-export async function saveProgress(req: Request, res: Response): Promise<void> {
-  const { userId, videoId } = req.body;
-
+export async function checkAndUnlockNextModule(userId: string, courseId: string, moduleId: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from("progress")
-      .insert([{ user_id: userId, video_id: videoId }]);
+    console.log(`checkAndUnlockNextModule chamado para usuário ${userId}, course ${courseId}, module ${moduleId}`);
 
-    if (error) {
-      res.status(400).json({ error: error.message });
+    const { data: course, error: courseError } = await supabase
+      .from('courses')
+      .select('modules')
+      .eq('id', courseId)
+      .single();
+
+    if (courseError || !course) {
+      console.error('Erro ao buscar curso:', courseError);
       return;
     }
 
-    await checkAndUnlockNextModule(userId, videoId);
+    const modules = course.modules as any[];
+    const currentModuleIndex = modules.findIndex((m: any) => m.id === moduleId);
+    if (currentModuleIndex === -1) {
+      console.error('Módulo não encontrado no curso');
+      return;
+    }
 
-    res.json({ message: "Progresso salvo e verificado com sucesso" });
+    const currentModule = modules[currentModuleIndex];
+    const videoIds = currentModule.videos.map((v: any) => v.id);
+
+    const { data: progressData, error: progressError } = await supabase
+      .from('user_progress')
+      .select('video_id, watched_duration, total_duration')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .eq('module_id', moduleId)
+      .in('video_id', videoIds);
+
+    if (progressError) {
+      console.error('Erro ao buscar progresso:', progressError);
+      return;
+    }
+
+    const allWatched = videoIds.every((videoId: string) => {
+      const record = progressData?.find((p: any) => p.video_id === videoId);
+      if (!record || !record.total_duration) return false;
+      const percentage = (record.watched_duration / record.total_duration) * 100;
+      return percentage == 100;
+    });
+
+    if (allWatched && currentModuleIndex < modules.length - 1) {
+      const nextModule = modules[currentModuleIndex + 1];
+      nextModule.unlocked = true;
+
+      const { error: updateError } = await supabase
+        .from('courses')
+        .update({ modules: modules })
+        .eq('id', courseId);
+
+      if (updateError) {
+        console.error('Erro ao desbloquear próximo módulo:', updateError);
+      } else {
+        console.log(`Módulo ${nextModule.id} desbloqueado com sucesso`);
+      }
+    }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro interno no servidor" });
+    console.error('Erro inesperado em checkAndUnlockNextModule:', err);
+  }
+}
+
+export async function saveProgress(req: Request, res: Response): Promise<void> {
+  try {
+    const { userId, courseId, moduleId, videoId, watchedDuration, totalDuration } = req.body;
+
+    if (!userId || !courseId || !moduleId || !videoId || watchedDuration === undefined || totalDuration === undefined) {
+      res.status(400).json({ error: 'Campos obrigatórios faltando' });
+      return;
+    }
+
+    const { error: upsertError } = await supabase
+      .from('user_progress')
+      .upsert(
+        {
+          user_id: userId,
+          course_id: courseId,
+          module_id: moduleId,
+          video_id: videoId,
+          watched_duration: watchedDuration,
+          total_duration: totalDuration,
+        },
+        { onConflict: 'user_id,course_id,module_id,video_id' }
+      );
+
+    if (upsertError) {
+      console.error('Erro ao salvar:', upsertError);
+      res.status(500).json({ error: 'Erro ao salvar o progresso' });
+      return;
+    }
+
+    await checkAndUnlockNextModule(userId, courseId, moduleId);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Erro em saveProgress:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
   }
 }
 
 export async function syncProgress(req: Request, res: Response): Promise<void> {
-  const { userId, progressList } = req.body;
-
   try {
-    const { error } = await supabase
-      .from("progress")
-      .insert(
-        progressList.map((p: { videoId: string; watchedAt: string }) => ({
-          user_id: userId,
-          video_id: p.videoId,
-          watched_at: p.watchedAt,
-        }))
-      );
+    const { userId, progressList } = req.body;
 
-    if (error) {
-      res.status(400).json({ error: error.message });
+    if (!userId || !progressList || !Array.isArray(progressList) || progressList.length === 0) {
+      res.status(400).json({ error: 'userId ou progressList ausentes' });
       return;
     }
 
-    for (const p of progressList) {
-      await checkAndUnlockNextModule(userId, p.videoId);
+    for (const item of progressList) {
+      const { courseId, moduleId, videoId, watchedDuration, totalDuration } = item;
+
+      if (!courseId || !moduleId || !videoId || watchedDuration === undefined || totalDuration === undefined) {
+        console.error('Item de progresso inválido:', item);
+        continue;
+      }
+
+      const { error: upsertError } = await supabase
+        .from('user_progress')
+        .upsert(
+          {
+            user_id: userId,
+            course_id: courseId,
+            module_id: moduleId,
+            video_id: videoId,
+            watched_duration: watchedDuration,
+            total_duration: totalDuration,
+          },
+          { onConflict: 'user_id,course_id,module_id,video_id' }
+        );
+
+      if (upsertError) {
+        console.error('Erro ao salvar item:', item, upsertError);
+        continue;
+      }
+
+      await checkAndUnlockNextModule(userId, courseId, moduleId);
     }
 
-    res.json({ message: "Progresso sincronizado e verificado com sucesso" });
+    res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro interno no servidor" });
+    console.error('Erro em syncProgress:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
   }
 }
 
-export async function checkAndUnlockNextModule(
-  userId: string,
-  videoId: string
-): Promise<void> {
-  const { data: video } = await supabase
-    .from("videos")
-    .select("module_id")
-    .eq("id", videoId)
-    .single();
+export async function getCourseProgress(req: Request, res: Response): Promise<void> {
+  try {
+    const { userId, courseId } = req.params;
 
-  if (!video) return;
-
-  const { data: moduleVideos } = await supabase
-    .from("videos")
-    .select("id")
-    .eq("module_id", video.module_id);
-
-  const { data: userProgress } = await supabase
-    .from("progress")
-    .select("video_id")
-    .eq("user_id", userId)
-    .in(
-      "video_id",
-      moduleVideos ? moduleVideos.map((v: { id: string }) => v.id) : []
-    );
-
-  if (userProgress && moduleVideos && userProgress.length === moduleVideos.length) {
-    const { data: currentModule } = await supabase
-      .from("modules")
-      .select("course_id, order_index")
-      .eq("id", video.module_id)
-      .single();
-
-    if (!currentModule) return;
-
-    const { data: nextModule } = await supabase
-      .from("modules")
-      .select("id")
-      .eq("course_id", currentModule.course_id)
-      .eq("order_index", currentModule.order_index + 1)
-      .single();
-
-    if (nextModule) {
-      await supabase
-        .from("modules")
-        .update({ unlocked: true })
-        .eq("id", nextModule.id);
+    if (!userId || !courseId) {
+      res.status(400).json({ error: 'userId ou courseId ausentes' });
+      return;
     }
+
+    const { data: course, error: courseError } = await supabase
+      .from('courses')
+      .select('modules')
+      .eq('id', courseId)
+      .single();
+
+    if (courseError || !course) {
+      console.error('Erro ao buscar curso:', courseError);
+      res.status(404).json({ error: 'Curso não encontrado' });
+      return;
+    }
+
+    const modules = course.modules as any[];
+    let totalVideos = 0;
+    let watchedVideos = 0;
+    let completedModules = 0;
+
+    for (const module of modules) {
+      const videoIds = module.videos.map((v: any) => v.id);
+      totalVideos += videoIds.length;
+
+      const { data: progressData, error: progressError } = await supabase
+        .from('user_progress')
+        .select('video_id, watched_duration, total_duration')
+        .eq('user_id', userId)
+        .eq('course_id', courseId)
+        .eq('module_id', module.id)
+        .in('video_id', videoIds);
+
+      if (progressError) {
+        console.error('Erro ao buscar progresso:', progressError);
+        continue;
+      }
+
+      for (const video of module.videos) {
+        const record = progressData?.find((p: any) => p.video_id === video.id);
+        if (record && record.total_duration > 0) {
+          const percentage = (record.watched_duration / record.total_duration) * 100;
+          if (percentage == 100) {
+            watchedVideos++;
+          }
+        }
+      }
+
+      const moduleCompleted = videoIds.every((videoId: string) => {
+        const record = progressData?.find((p: any) => p.video_id === videoId);
+        if (!record || !record.total_duration) return false;
+        const percentage = (record.watched_duration / record.total_duration) * 100;
+        return percentage == 100;
+      });
+
+      if (moduleCompleted) {
+        completedModules++;
+      }
+    }
+
+    const percentage = totalVideos > 0 ? Math.round((watchedVideos / totalVideos) * 100) : 0;
+
+    res.json({
+      watchedVideos,
+      totalVideos,
+      completedModules,
+      percentage
+    });
+  } catch (err) {
+    console.error('Erro em getCourseProgress:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
   }
 }
