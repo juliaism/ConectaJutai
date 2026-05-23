@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../configApi/api";
@@ -13,77 +12,79 @@ type RootStackParamList = {
 };
 
 type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
+  navigation: any;
+  setIsLoggedIn: (value: boolean) => void; 
 };
 
-export default function LoginScreen({ navigation }: Props) {
+export default function LoginScreen({ navigation, setIsLoggedIn }: Props) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-  if (phone.trim() === "" || password.trim() === "") {
-    Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    console.log("🔵 Iniciando login...");
-    console.log("📱 Telefone:", phone);
-    console.log("🔐 Senha:", password);
-
-    const response = await api.post(
-      "/api/auth/login",
-      { phone, password },
-      { timeout: 10000 }
-    );
-
-    console.log("✅ Resposta da API:", response.data);
-
-    if (!response.data.token) {
-      console.log("Token não encontrado na resposta");
-      Alert.alert("Erro", "Servidor não retornou um token válido");
+    if (phone.trim() === "" || password.trim() === "") {
+      Alert.alert("Erro", "Por favor, preencha o telefone e a senha.");
       return;
     }
 
-    const token = response.data.token;
-    console.log("Token recebido:", token);
+    try {
+      setLoading(true);
 
-    await AsyncStorage.setItem("token", token);
-    navigation.navigate("Courses");
-    console.log("Token salvo no AsyncStorage");
+      console.log("🔵 Iniciando login...");
+      console.log("📱 Telefone:", phone);
+      console.log("🔐 Senha:", password);
 
-    Alert.alert("Sucesso", "Login realizado com sucesso!");
+      const response = await api.post(
+        "/api/auth/login",
+        { phone, password },
+        { timeout: 10000 }
+      );
 
-  } catch (error: any) {
-    console.log("ERRO CAPTURADO:", error);
-    console.log("Tipo de erro:", error.constructor.name);
-    console.log("Mensagem:", error.message);
+      console.log("✅ Resposta da API:", response.data);
 
-    if (axios.isAxiosError(error)) {
-      console.log("É um erro Axios");
-      
-      if (error.response) {
-        console.log("Status:", error.response.status);
-        console.log("Dados:", error.response.data);
-        Alert.alert("Erro", error.response.data?.error || "Credenciais inválidas");
-      } else if (error.request) {
-        console.log("Nenhuma resposta do servidor");
-        Alert.alert("Erro", "Servidor não respondeu. Verifique sua internet.");
-      } else {
-        console.log("Erro na configuração:", error.message);
-        Alert.alert("Erro", error.message);
+      if (!response.data.token) {
+        console.log("Token não encontrado na resposta");
+        Alert.alert("Erro", "Servidor não retornou um token válido");
+        return;
       }
-    } else {
-      console.log("Erro desconhecido:", error);
-      Alert.alert("Erro", "Erro desconhecido");
+
+      const token = response.data.token;
+      console.log("Token recebido:", token);
+
+      await AsyncStorage.setItem("token", token);
+      console.log("Token salvo no AsyncStorage");
+
+      // 🎯 A MÁGICA: Em vez de navigation.navigate, usamos o estado global que joga pra tela de Guias!
+      Alert.alert("Sucesso", "Login realizado com sucesso!");
+      setIsLoggedIn(true);
+
+    } catch (error: any) {
+      console.log("ERRO CAPTURADO:", error);
+      console.log("Tipo de erro:", error?.constructor?.name);
+      console.log("Mensagem:", error?.message);
+
+      if (axios.isAxiosError(error)) {
+        console.log("É um erro Axios");
+        
+        if (error.response) {
+          console.log("Status:", error.response.status);
+          console.log("Dados:", error.response.data);
+          Alert.alert("Erro", error.response.data?.error || "Credenciais inválidas");
+        } else if (error.request) {
+          console.log("Nenhuma resposta do servidor");
+          Alert.alert("Erro", "Servidor não respondeu. Verifique sua internet.");
+        } else {
+          console.log("Erro na configuração:", error.message);
+          Alert.alert("Erro", error.message);
+        }
+      } else {
+        console.log("Erro desconhecido:", error);
+        Alert.alert("Erro", "Erro desconhecido");
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <View style={styles.container}>
