@@ -3,8 +3,7 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
-import axios from 'axios';
-import api from '../configApi/api';
+import CourseService from "../service/downloadGuiasService.ts"; 
 
 interface Course {
   id: string;
@@ -39,40 +38,22 @@ export default function GuiasScreen() {
     checkDownloadedCourses();
   }, []);
 
-  const loadCourses = async () => {
+ const loadCourses = async () => {
   try {
     setLoading(true);
-    
-    const response = await api.get('/api/courses', { timeout: 12000 }); 
-    
-    console.log('Resposta recebida!');
-    console.log('Dados:', response.data);
-    
-    let coursesArray = [];
-    if (Array.isArray(response.data)) {
-      coursesArray = response.data;
-    } else if (response.data && Array.isArray(response.data.data)) {
-      coursesArray = response.data.data;
-    } else {
-      console.warn('Estrutura inesperada:', response.data);
-      coursesArray = [];
-    }
-    
+    const coursesArray = await CourseService.fetchCourses();
+    console.log('Dados:', coursesArray);
     console.log('Total de cursos:', coursesArray.length);
+    console.log('IDs de cursos baixados:', coursesArray.map(c => c.id));
     setCourses(coursesArray);
   } catch (error) {
-    console.error('ERRO NA REQUISIÇÃO:', error);
-    
-    if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
-      Alert.alert('Erro', 'Requisição expirou. Tente novamente.');
-    } else {
-      console.error('Erro ao carregar cursos:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os cursos');
-    }
+    console.error('Erro ao carregar cursos:', error);
+    Alert.alert('Erro', 'Não foi possível carregar os cursos');
   } finally {
     setLoading(false);
   }
 };
+
   const checkDownloadedCourses = async () => {
     try {
       const downloaded = await AsyncStorage.getItem('downloadedCourses');
@@ -84,44 +65,69 @@ export default function GuiasScreen() {
     }
   };
 
-  async function downloadCourse(course: Course): Promise<void> {
-  if (!course || !course.modules) {
-    Alert.alert('Erro', 'Curso inválido ou sem módulos.');
-    return;
-  }
-
-  const totalVideos = course.modules.reduce((sum, module) => sum + (module.videos?.length || 0), 0);
-
-  const structuredModules = course.modules.map((module, index) => ({
-    id: module.id || `module_${index}`,
-    title: module.title,
-    level: getLevelByIndex(index),
-    status: 'locked' as const,
-    videoUrl: module.videos?.[0]?.url || ''
-  }));
-
-  let downloadedCount = 0;
-  for (const mod of structuredModules) {
-    if (mod.videoUrl) {
-      try {
-        const fileUri = `${FileSystem.documentDirectory}videos/${mod.id}.mp4`;
-        await FileSystem.downloadAsync(mod.videoUrl, fileUri);
-        downloadedCount++;
-        const progress = Math.round((downloadedCount / totalVideos) * 100);
-        console.log(`Progresso: ${progress}%`);
-      } catch (error) {
-        Alert.alert('Download Falhou', `Falha ao baixar vídeo do módulo ${mod.title}`);
-      }
-    } else {
-      downloadedCount++;
-    }
-  }
-
+   async function downloadCourse(course: Course): Promise<void> {
   try {
-    await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(structuredModules));
-    Alert.alert('Sucesso', 'Curso baixado e salvo com sucesso!');
+    setDownloadingCourseId(course.id);
+    setDownloadProgress(0);
+
+    console.log('Iniciando download do curso:', course.title);
+    console.log('Módulos:', course.modules);
+
+    let totalVideos = 0;
+    let downloadedVideos = 0;
+
+    // Contar total de vídeos
+    for (const module of course.modules) {
+      totalVideos += module.videos?.length || 0;
+    }
+
+    console.log(`Total de vídeos a baixar: ${totalVideos}`);
+
+    // Criar diretório de vídeos
+    const videosDir = `${FileSystem.documentDirectory}videos/`;
+    await FileSystem.makeDirectoryAsync(videosDir, { intermediates: true });
+
+    // Baixar cada vídeo
+    for (const module of course.modules) {
+      for (const video of module.videos || []) {
+        try {
+          const fileUri = `${videosDir}${video.id}.mp4`;
+          
+          console.log(`Baixando vídeo: ${video.title}`);
+          console.log(`URL: ${video.url}`);
+          
+          await FileSystem.downloadAsync(video.url, fileUri);
+          
+          downloadedVideos++;
+          const progress = Math.round((downloadedVideos / totalVideos) * 100);
+          setDownloadProgress(progress);
+          console.log(`Progresso: ${progress}%`);
+        } catch (error) {
+          console.error(`Erro ao baixar vídeo ${video.title}:`, error);
+          Alert.alert('Aviso', `Falha ao baixar vídeo: ${video.title}`);
+        }
+      }
+    }
+
+    // Salvar no AsyncStorage
+    await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(course));
+    console.log('Curso salvo no AsyncStorage');
+
+    // Salvar no courseService
+    await CourseService.saveDownloadedCourseId(course.id);
+    console.log('Curso salvo no courseService');
+
+    // Atualizar estado
+    setDownloadedCourses([...downloadedCourses, course.id]);
+    setDownloadingCourseId(null);
+    setDownloadProgress(0);
+
+    Alert.alert('Sucesso', 'Curso baixado com sucesso!');
   } catch (error) {
-    Alert.alert('Erro', 'Falha ao salvar dados no AsyncStorage.');
+    console.error('Erro ao baixar curso:', error);
+    Alert.alert('Erro', 'Falha ao baixar o curso');
+    setDownloadingCourseId(null);
+    setDownloadProgress(0);
   }
 }
 

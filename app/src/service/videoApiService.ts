@@ -145,7 +145,7 @@ export const videoApiService = {
           userId
         );
       }
-      console.log('✅ Progresso sincronizado com sucesso');
+      console.log('Progresso sincronizado com sucesso');
     } catch (err) {
       console.error('Erro ao sincronizar progresso:', err);
       throw err;
