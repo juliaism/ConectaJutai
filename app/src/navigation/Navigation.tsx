@@ -8,7 +8,7 @@ import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
 import ProfileScreen from "../screens/Perfil";
 import ResetPasswordScreen from "../screens/ResetPassowrd";
-import JornadaScreen from "../screens/Jornada";
+import JornadaScreen from "../screens/jornada";
 import GuiasScreen from "../screens/Guia";
 import DownloadsScreen from "../screens/Download";
 import ModuleScreen from "../screens/Modulo";
