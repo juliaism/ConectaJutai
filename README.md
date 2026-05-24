@@ -27,7 +27,65 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 
 ### 📁 **Estrutura do Projeto**<br>
 ```
-
+conecta-jutai/
+├── .expo/
+├── .vscode/                                                  
+│    └── .react/
+├── app/                      
+│   ├── src/                    
+│   │   ├── assets/              
+│   │   │   ├── imagens
+│   │   │   └── videos
+│   │   ├── configApi/               
+│   │   │   └── api.ts
+│   │   ├── contexts/            
+│   │   │   └── authContext.tsx
+│   │   ├── navigation/        
+│   │   │   └── Navigation.tsx
+│   │   ├── screens/           
+│   │   │   ├── Download.tsx
+│   │   │   ├── Guia.tsx
+│   │   │   ├── Jornada.tsx
+│   │   │   ├── Login.tsx
+│   │   │   ├── Modulo.tsx
+│   │   │   ├── Perfil.tsx
+│   │   │   ├── ResetPassword.tsx
+│   │   │   └── Signup.tsx
+│   │   └── service/            
+│   │   │   ├── authService.ts
+│   │   │   ├── downloadGuiasService.ts
+│   │   │   ├── syncService.ts
+│   │   │   └── videoApiService.ts
+│   └── app.json
+├── components/                                                        
+│    └── ui/
+├── constants/                                                         
+│    └── theme.ts
+├── hooks/
+├── node_modules/
+├── scripts/                                                  
+├── services/                                                         
+│   ├── config/                                             
+│   │   │   └── supabaseClient.ts                             
+│   ├── controllers/                                          
+│   │   │   ├── authController.ts
+│   │   │   ├── coursesController.ts
+│   │   │   └── progressController.ts
+│   ├── middleware/                                          
+│   │   │   └── authMiddleware.ts                           
+│   ├── routes/                                              
+│   │   │   ├── auth.ts                                     
+│   │   │   ├── courses.ts                                  
+│   │   │   └── progress.ts                                  
+│   └── server.ts                                            
+├── .env.example               
+├── .gitignore
+├── app.json                      
+├── App.tsx                                 
+├── package-lock.json                 
+├── package.json
+├── README.md           
+└── tsconfig.json
 
 ```
 
