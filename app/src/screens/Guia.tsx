@@ -43,7 +43,7 @@ export default function GuiasScreen() {
   try {
     setLoading(true);
     
-    const response = await api.get('/api/courses', { timeout: 120000 }); 
+    const response = await api.get('/api/courses', { timeout: 12000 }); 
     
     console.log('Resposta recebida!');
     console.log('Dados:', response.data);

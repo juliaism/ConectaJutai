@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://conectajutai.onrender.com:3000/api';
+const API_BASE_URL = 'https://conectajutai.onrender.com/api';
 
 export interface VideoResponse {
   id: string;
