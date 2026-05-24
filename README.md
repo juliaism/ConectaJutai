@@ -88,11 +88,6 @@ conecta-jutai/
 └── tsconfig.json                            
 
 ```
-## Instalar
-
-```bash
-
-```
 
 ###  **Autenticação**<br>
 A segurança do usuário é garantida por um sistema de credenciais simplificado e rigoroso:<br>
