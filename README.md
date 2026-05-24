@@ -33,7 +33,7 @@ conecta-jutai/
 │    └── .react/
 ├── app/                      
 │   ├── src/                    
-│   │   ├── assets/              
+│   │   ├── assets/                          # Imagens e vídeos        
 │   │   │   ├── imagens
 │   │   │   └── videos
 │   │   ├── configApi/               
@@ -42,7 +42,7 @@ conecta-jutai/
 │   │   │   └── authContext.tsx
 │   │   ├── navigation/        
 │   │   │   └── Navigation.tsx
-│   │   ├── screens/           
+│   │   ├── screens/                         # Telas do aplicativo       
 │   │   │   ├── Download.tsx
 │   │   │   ├── Guia.tsx
 │   │   │   ├── Jornada.tsx
@@ -56,7 +56,7 @@ conecta-jutai/
 │   │   │   ├── downloadGuiasService.ts
 │   │   │   ├── syncService.ts
 │   │   │   └── videoApiService.ts
-│   └── app.json
+│   └── app.json                             # Configuração Expo
 ├── components/                                                        
 │    └── ui/
 ├── constants/                                                         
@@ -73,19 +73,19 @@ conecta-jutai/
 │   │   │   └── progressController.ts
 │   ├── middleware/                                          
 │   │   │   └── authMiddleware.ts                           
-│   ├── routes/                                              
+│   ├── routes/                              # Definição das rotas da API                                            
 │   │   │   ├── auth.ts                                     
 │   │   │   ├── courses.ts                                  
 │   │   │   └── progress.ts                                  
 │   └── server.ts                                            
-├── .env.example               
-├── .gitignore
+├── .env.example                             # Exemplo de variáveis de ambiente                    
+├── .gitignore                               # Arquivos e pastas ignorados pelo Git                  
 ├── app.json                      
 ├── App.tsx                                 
 ├── package-lock.json                 
-├── package.json
-├── README.md           
-└── tsconfig.json
+├── package.json                             # Dependências, versões e scripts globais
+├── README.md                                # Documentação do projeto
+└── tsconfig.json                            # Configuração do TypeScript 
 
 ```
 
