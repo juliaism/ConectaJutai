@@ -55,15 +55,19 @@ export default function GuiasScreen() {
 };
 
   const checkDownloadedCourses = async () => {
-    try {
-      const downloaded = await AsyncStorage.getItem('downloadedCourses');
-      if (downloaded) {
-        setDownloadedCourses(JSON.parse(downloaded));
-      }
-    } catch (error) {
-      console.error('Erro ao verificar cursos baixados:', error);
+  try {
+    const downloaded = await CourseService.getStoredCourses();
+    const downloadedIds = await AsyncStorage.getItem('downloaded_course_ids');
+    if (downloadedIds) {
+      const ids = JSON.parse(downloadedIds);
+      setDownloadedCourses(ids);
+      console.log('IDs de cursos baixados:', ids);
+      console.log('Cursos carregados:', downloaded);
     }
-  };
+  } catch (error) {
+    console.error('Erro ao verificar cursos baixados:', error);
+  }
+};   
 
    async function downloadCourse(course: Course): Promise<void> {
   try {
@@ -76,18 +80,14 @@ export default function GuiasScreen() {
     let totalVideos = 0;
     let downloadedVideos = 0;
 
-    // Contar total de vídeos
     for (const module of course.modules) {
       totalVideos += module.videos?.length || 0;
     }
 
     console.log(`Total de vídeos a baixar: ${totalVideos}`);
 
-    // Criar diretório de vídeos
     const videosDir = `${FileSystem.documentDirectory}videos/`;
     await FileSystem.makeDirectoryAsync(videosDir, { intermediates: true });
-
-    // Baixar cada vídeo
     for (const module of course.modules) {
       for (const video of module.videos || []) {
         try {
@@ -109,15 +109,12 @@ export default function GuiasScreen() {
       }
     }
 
-    // Salvar no AsyncStorage
     await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(course));
     console.log('Curso salvo no AsyncStorage');
 
-    // Salvar no courseService
     await CourseService.saveDownloadedCourseId(course.id);
     console.log('Curso salvo no courseService');
 
-    // Atualizar estado
     setDownloadedCourses([...downloadedCourses, course.id]);
     setDownloadingCourseId(null);
     setDownloadProgress(0);

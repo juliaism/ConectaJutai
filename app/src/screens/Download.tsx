@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import {Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
-import { downloadGuideService } from '../service/downloadGuiasService';
+import CourseService from '../service/downloadGuiasService.ts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface GuideInfo {
@@ -26,7 +26,7 @@ export default function DownloadsScreen() {
     try {
       setLoading(true);
 
-      const guides = await downloadGuideService.getDownloadedGuides();
+      const guides = await CourseService.getDownloadedGuides();
       setDownloadedGuides(
         guides.map((g) => ({
           id: g.id,
@@ -36,10 +36,10 @@ export default function DownloadsScreen() {
         }))
       );
 
-      const total = await downloadGuideService.getTotalDownloadedSize();
+      const total = await CourseService.getTotalDownloadedSize();
       setTotalSize(total);
 
-      const available = await downloadGuideService.getAvailableSpace();
+      const available = await CourseService.getAvailableSpace();
       setAvailableSpace(available);
     } catch (err) {
       console.error('Erro ao carregar informações:', err);
@@ -59,7 +59,7 @@ export default function DownloadsScreen() {
           text: 'Deletar',
           onPress: async () => {
             try {
-              await downloadGuideService.deleteGuide(guideId);
+              await CourseService.deleteGuide(guideId);
               loadDownloadsInfo();
               Alert.alert('Deletado', 'Guia removido com sucesso.');
             } catch (err) {
@@ -81,7 +81,7 @@ export default function DownloadsScreen() {
           text: 'Limpar',
           onPress: async () => {
             try {
-              await downloadGuideService.cleanOldGuides(30);
+              await CourseService.cleanOldGuides(30);
               loadDownloadsInfo();
               Alert.alert('Limpeza Concluída', 'Guias antigos foram removidos.');
             } catch (err) {
@@ -96,7 +96,7 @@ export default function DownloadsScreen() {
   const handleSyncProgress = async () => {
     try {
       setSyncing(true);
-      await downloadGuideService.syncOfflineProgress('user-id');
+      await CourseService.syncOfflineProgress('user-id');
       Alert.alert('Sincronizado', 'Progresso sincronizado com sucesso.');
     } catch (err) {
       Alert.alert('Erro', 'Erro ao sincronizar progresso.');
