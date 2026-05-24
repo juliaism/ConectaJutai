@@ -155,7 +155,6 @@ export const downloadGuideService = {
   }
 },
 
-// ✅ 1️⃣1️⃣ Limpar cache de guias antigos
 cleanOldGuides: async (daysOld: number = 30): Promise<void> => {
   try {
     const guides = await downloadGuideService.getDownloadedGuides();
@@ -167,15 +166,15 @@ cleanOldGuides: async (daysOld: number = 30): Promise<void> => {
         const downloadDate = new Date(guide.downloadedAt).getTime();
         
         if (downloadDate < thirtyDaysAgo) {
-          console.log(`🗑️ Deletando guia antigo: ${guide.id}`);
+          console.log(`Deletando guia antigo: ${guide.id}`);
           await downloadGuideService.deleteGuide(guide.id);
         }
       }
     }
 
-    console.log('✅ Limpeza de guias antigos concluída');
+    console.log('Limpeza de guias antigos concluída');
   } catch (err) {
-    console.error('❌ Erro ao limpar guias:', err);
+    console.error('Erro ao limpar guias:', err);
     throw err;
   }
 },
@@ -185,15 +184,15 @@ syncOfflineProgress: async (userId: string): Promise<void> => {
     const guides = await downloadGuideService.getDownloadedGuides();
     
     if (!guides || guides.length === 0) {
-      console.log('✅ Nenhum guia para sincronizar');
+      console.log('Nenhum guia para sincronizar');
       return;
     }
     
-    console.log(`🔄 Sincronizando ${guides.length} guias...`);
+    console.log(`Sincronizando ${guides.length} guias...`);
 
-    console.log('✅ Sincronização concluída');
+    console.log('Sincronização concluída');
   } catch (err) {
-    console.error('❌ Erro ao sincronizar:', err);
+    console.error('Erro ao sincronizar:', err);
     throw err;
   }
 },
