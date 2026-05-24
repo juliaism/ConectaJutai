@@ -1,5 +1,4 @@
 import supabase from '../config/supabaseClient.ts';
-import { PostgrestError } from '@supabase/supabase-js';
 
 interface Course {
   id?: number;
