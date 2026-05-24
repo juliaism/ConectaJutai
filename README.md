@@ -36,11 +36,11 @@ conecta-jutai/
 │   │   ├── assets/                          # Imagens e vídeos        
 │   │   │   ├── imagens
 │   │   │   └── videos
-│   │   ├── configApi/               
+│   │   ├── configApi/                       # Configuração de API               
 │   │   │   └── api.ts
 │   │   ├── contexts/            
 │   │   │   └── authContext.tsx
-│   │   ├── navigation/        
+│   │   ├── navigation/                      # Configuração de navegação
 │   │   │   └── Navigation.tsx
 │   │   ├── screens/                         # Telas do aplicativo       
 │   │   │   ├── Download.tsx
@@ -51,7 +51,7 @@ conecta-jutai/
 │   │   │   ├── Perfil.tsx
 │   │   │   ├── ResetPassword.tsx
 │   │   │   └── Signup.tsx
-│   │   └── service/            
+│   │   └── service/                         # Serviços do aplicativo
 │   │   │   ├── authService.ts
 │   │   │   ├── downloadGuiasService.ts
 │   │   │   ├── syncService.ts
@@ -67,7 +67,7 @@ conecta-jutai/
 ├── services/                                                         
 │   ├── config/                                             
 │   │   │   └── supabaseClient.ts                             
-│   ├── controllers/                                          
+│   ├── controllers/                         # Lógica de negócio das rotas                                 
 │   │   │   ├── authController.ts
 │   │   │   ├── coursesController.ts
 │   │   │   └── progressController.ts
@@ -77,7 +77,7 @@ conecta-jutai/
 │   │   │   ├── auth.ts                                     
 │   │   │   ├── courses.ts                                  
 │   │   │   └── progress.ts                                  
-│   └── server.ts                                            
+│   └── server.ts                            # Arquivo de entrada do servidor                                        
 ├── .env.example                             # Exemplo de variáveis de ambiente                    
 ├── .gitignore                               # Arquivos e pastas ignorados pelo Git                  
 ├── app.json                      
