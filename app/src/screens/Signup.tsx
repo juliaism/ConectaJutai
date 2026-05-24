@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from "react-native";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,7 +9,6 @@ type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   ResetPassword: undefined;
-  Courses: undefined;
 };
 
 type Props = {
@@ -60,26 +59,20 @@ export default function SignupScreen({ navigation }: Props) {
         return;
       }
 
-      if (!response.data.token) {
-        console.log("Token não encontrado na resposta");
-        Alert.alert("Erro", "Servidor não retornou o token");
-        return;
-      }
-
-      await AsyncStorage.setItem("token", response.data.token);
-      navigation.navigate("Courses");
-      console.log("Token salvo com sucesso!");
-
       console.log("Cadastro realizado com sucesso!");
-      Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+      Alert.alert("Sucesso!", "Sua conta foi criada. Faça login para continuar.");
 
       setPhone("");
       setPassword("");
       setConfirmPassword("");
+      
+      // 🎯 Manda o usuário para a tela de Login em vez de tentar abrir a tela antiga
+      navigation.navigate("Login");
+
     } catch (error: any) {
       console.log("ERRO CAPTURADO:", error);
-      console.log("Tipo de erro:", error.constructor.name);
-      console.log("Mensagem:", error.message);
+      console.log("Tipo de erro:", error?.constructor?.name);
+      console.log("Mensagem:", error?.message);
 
       if (axios.isAxiosError(error)) {
         console.log("É um erro Axios");
