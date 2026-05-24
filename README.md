@@ -33,7 +33,7 @@ conecta-jutai/
 │    └── .react/
 ├── app/                      
 │   ├── src/                    
-│   │   ├── assets/                          # Imagens e vídeos        
+│   │   ├── assets/                               
 │   │   │   ├── imagens
 │   │   │   └── videos
 │   │   ├── configApi/                       # Configuração de API               
@@ -83,12 +83,16 @@ conecta-jutai/
 ├── app.json                      
 ├── App.tsx                                 
 ├── package-lock.json                 
-├── package.json                             # Dependências, versões e scripts globais
-├── README.md                                # Documentação do projeto
-└── tsconfig.json                            # Configuração do TypeScript 
+├── package.json                             
+├── README.md                                
+└── tsconfig.json                            
 
 ```
+## Instalar
 
+```bash
+
+```
 
 ###  **Autenticação**<br>
 A segurança do usuário é garantida por um sistema de credenciais simplificado e rigoroso:<br>
