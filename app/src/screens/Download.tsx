@@ -96,7 +96,7 @@ export default function DownloadsScreen() {
   const handleSyncProgress = async () => {
     try {
       setSyncing(true);
-      await CourseService.syncOfflineProgress('user-id');
+      await CourseService.syncOfflineProgress('user-id'=);
       Alert.alert('Sincronizado', 'Progresso sincronizado com sucesso.');
     } catch (err) {
       Alert.alert('Erro', 'Erro ao sincronizar progresso.');

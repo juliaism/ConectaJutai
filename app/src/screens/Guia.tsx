@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
-import axios from 'axios';
-import api from '../configApi/api';
+import CourseService from "../service/downloadGuiasService.ts"; 
 
 interface Course {
   id: string;
@@ -39,59 +38,22 @@ export default function GuiasScreen() {
     checkDownloadedCourses();
   }, []);
 
-  const loadCourses = async () => {
-    try {
-      setLoading(true);
-
-      // 🚀 MODO HACKATHON: API Comentada para não quebrar sem internet
-      /*
-      const response = await api.get('/api/courses', { timeout: 12000 }); 
-      let coursesArray = [];
-      if (Array.isArray(response.data)) {
-        coursesArray = response.data;
-      } else if (response.data && Array.isArray(response.data.data)) {
-        coursesArray = response.data.data;
-      }
-      */
-
-      // 👇 DADOS FALSOS (MOCK) PARA A APRESENTAÇÃO - IDs trocados para burlar o cache!
-      const mockCourses: Course[] = [
-        {
-          id: "aula_1", // 🎯 Truque ninja: Mudamos o ID para resetar o download!
-          title: "Agroecologia na Prática",
-          description: "Aprenda as bases da agricultura sustentável e técnicas para o dia a dia na sua plantação.",
-          modules: [
-            { id: "mod1", title: "Introdução ao Solo", level: "Iniciante", status: "completed", videoUrl: "" }
-          ]
-        },
-        {
-          id: "aula_2",
-          title: "Gestão Financeira Familiar",
-          description: "Como organizar os ganhos da colheita, precificar produtos e planejar o futuro financeiro.",
-          modules: [
-            { id: "mod2", title: "Planilhas Básicas", level: "Iniciante", status: "locked", videoUrl: "" }
-          ]
-        },
-        {
-          id: "aula_3",
-          title: "Técnicas de Irrigação",
-          description: "Sistemas eficientes para economizar água e aumentar a produtividade no campo.",
-          modules: [
-             { id: "mod3", title: "Gotejamento", level: "Intermediário", status: "locked", videoUrl: "" }
-          ]
-        }
-      ];
-
-      console.log('Total de cursos carregados:', mockCourses.length);
-      setCourses(mockCourses);
-
-    } catch (error) {
-      console.error('ERRO NA REQUISIÇÃO:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os cursos');
-    } finally {
-      setLoading(false);
-    }
-  };
+ const loadCourses = async () => {
+  try {
+    setLoading(true);
+    
+    const coursesArray = await CourseService.fetchCourses();
+    console.log('Dados:', coursesArray);
+    console.log('Total de cursos:', coursesArray.length);
+    console.log('IDs de cursos baixados:', coursesArray.map(c => c.id));
+    setCourses(coursesArray);
+  } catch (error) {
+    console.error('Erro ao carregar cursos:', error);
+    Alert.alert('Erro', 'Não foi possível carregar os cursos');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const checkDownloadedCourses = async () => {
     try {
@@ -104,36 +66,65 @@ export default function GuiasScreen() {
     }
   };
 
-  async function downloadCourse(course: Course): Promise<void> {
-    if (!course || !course.modules) {
-      Alert.alert('Erro', 'Curso inválido ou sem módulos.');
-      return;
-    }
-
-    // 🚀 Simulação de Download para o Hackathon
+   async function downloadCourse(course: Course): Promise<void> {
+  try {
     setDownloadingCourseId(course.id);
     setDownloadProgress(0);
 
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 0.2; // Aumenta o progresso simulado
-      setDownloadProgress(progress);
+    console.log('Iniciando download do curso:', course.title);
+    console.log('Módulos:', course.modules);
 
-      if (progress >= 1) {
-        clearInterval(interval);
-        setDownloadingCourseId(null);
-        
-        const newDownloaded = [...downloadedCourses, course.id];
-        setDownloadedCourses(newDownloaded);
-        AsyncStorage.setItem('downloadedCourses', JSON.stringify(newDownloaded));
-        
-        // 🎯 A LINHA QUE FALTAVA: Salva o conteúdo inteiro do curso na memória!
-        AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(course));
-        
-        Alert.alert('Sucesso', 'Curso baixado e salvo com sucesso!');
+    let totalVideos = 0;
+    let downloadedVideos = 0;
+
+    for (const module of course.modules) {
+      totalVideos += module.videos?.length || 0;
+    }
+
+    console.log(`Total de vídeos a baixar: ${totalVideos}`);
+
+    const videosDir = `${FileSystem.documentDirectory}videos/`;
+    await FileSystem.makeDirectoryAsync(videosDir, { intermediates: true });
+
+    for (const module of course.modules) {
+      for (const video of module.videos || []) {
+        try {
+          const fileUri = `${videosDir}${video.id}.mp4`;
+          
+          console.log(`Baixando vídeo: ${video.title}`);
+          console.log(`URL: ${video.url}`);
+          
+          await FileSystem.downloadAsync(video.url, fileUri);
+          
+          downloadedVideos++;
+          const progress = Math.round((downloadedVideos / totalVideos) * 100);
+          setDownloadProgress(progress);
+          console.log(`Progresso: ${progress}%`);
+        } catch (error) {
+          console.error(`Erro ao baixar vídeo ${video.title}:`, error);
+          Alert.alert('Aviso', `Falha ao baixar vídeo: ${video.title}`);
+        }
       }
-    }, 500); // Meio segundo por etapa
+    }
+
+    await AsyncStorage.setItem(`course_${course.id}`, JSON.stringify(course));
+    console.log('Curso salvo no AsyncStorage');
+
+    await CourseService.saveDownloadedCourseId(course.id);
+    console.log('Curso salvo no courseService');
+
+    setDownloadedCourses([...downloadedCourses, course.id]);
+    setDownloadingCourseId(null);
+    setDownloadProgress(0);
+
+    Alert.alert('Sucesso', 'Curso baixado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao baixar curso:', error);
+    Alert.alert('Erro', 'Falha ao baixar o curso');
+    setDownloadingCourseId(null);
+    setDownloadProgress(0);
   }
+}
 
   if (loading) {
     return (
@@ -240,12 +231,12 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: '#ECF0F1',
     borderRadius: 4,
-    overflow: 'hidden',
-    marginTop: 10
+    overflow: 'hidden'
   },
   downloadProgressBar: {
     height: '100%',
     backgroundColor: '#27AE60',
     borderRadius: 4
   }
-});
+})
+

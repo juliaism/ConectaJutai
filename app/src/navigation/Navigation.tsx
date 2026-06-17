@@ -4,11 +4,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
+
 import LoginScreen from "../screens/Login";
 import SignupScreen from "../screens/Signup";
 import ProfileScreen from "../screens/Perfil";
 import ResetPasswordScreen from "../screens/ResetPassowrd";
-import JornadaScreen from "../screens/jornada";
+import JornadaScreen from "../screens/Jornada";
 import GuiasScreen from "../screens/Guia";
 import DownloadsScreen from "../screens/Download";
 import ModuleScreen from "../screens/Modulo";

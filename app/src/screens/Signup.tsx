@@ -65,8 +65,6 @@ export default function SignupScreen({ navigation }: Props) {
       setPhone("");
       setPassword("");
       setConfirmPassword("");
-      
-      // 🎯 Manda o usuário para a tela de Login em vez de tentar abrir a tela antiga
       navigation.navigate("Login");
 
     } catch (error: any) {

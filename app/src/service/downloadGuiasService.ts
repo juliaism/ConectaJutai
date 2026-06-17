@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 interface Course {
   id: string;
   title: string;
+  description: string;
   modules: Module[];
 }
 
