@@ -89,6 +89,8 @@ conecta-jutai/
 
 ```
 
+###  **Executar Localmente**<br>
+
 ###  **Autenticação**<br>
 A segurança do usuário é garantida por um sistema de credenciais simplificado e rigoroso:<br>
 •  Identificador: Telefone celular (exatamente 9 dígitos)<br>
