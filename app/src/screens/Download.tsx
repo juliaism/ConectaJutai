@@ -6,8 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface GuideInfo {
   id: string;
-  titulo: string;
-  downloadedAt: string;
+  courseId: string;
+  title: string;
+  filePath: string;
   size: number;
 }
 
@@ -30,9 +31,10 @@ export default function DownloadsScreen() {
       setDownloadedGuides(
         guides.map((g) => ({
           id: g.id,
-          titulo: g.titulo,
-          downloadedAt: g.downloadedAt || '',
-          size: g.videoSize || 0,
+          courseId: g.courseId,
+          title: g.title,
+          filePath: g.filePath || '',
+          size: g.size || 0,
         }))
       );
 
@@ -49,7 +51,7 @@ export default function DownloadsScreen() {
     }
   };
 
-  const handleDeleteGuide = async (guideId: string) => {
+  const handleDeleteGuide = async (guideId: string, courseId: string) => {
     Alert.alert(
       'Deletar Guia',
       'Tem certeza que deseja deletar este guia?',
@@ -59,7 +61,7 @@ export default function DownloadsScreen() {
           text: 'Deletar',
           onPress: async () => {
             try {
-              await CourseService.deleteGuide(guideId);
+              await CourseService.deleteGuide(guideId, courseId);
               loadDownloadsInfo();
               Alert.alert('Deletado', 'Guia removido com sucesso.');
             } catch (err) {
@@ -96,7 +98,7 @@ export default function DownloadsScreen() {
   const handleSyncProgress = async () => {
     try {
       setSyncing(true);
-      await CourseService.syncOfflineProgress('user-id'=);
+      await CourseService.syncOfflineProgress();
       Alert.alert('Sincronizado', 'Progresso sincronizado com sucesso.');
     } catch (err) {
       Alert.alert('Erro', 'Erro ao sincronizar progresso.');
@@ -170,17 +172,14 @@ export default function DownloadsScreen() {
             {downloadedGuides.map((guide) => (
               <View key={guide.id} style={styles.guideCard}>
                 <View style={styles.guideInfo}>
-                  <Text style={styles.guideTitle}>{guide.titulo}</Text>
-                  <Text style={styles.guideDate}>
-                    📅 {formatDate(guide.downloadedAt)}
-                  </Text>
+                  <Text style={styles.guideTitle}>{guide.title}</Text>
                   <Text style={styles.guideSize}>
                     💾 {formatBytes(guide.size)}
                   </Text>
                 </View>
 
                 <TouchableOpacity
-                  onPress={() => handleDeleteGuide(guide.id)}
+                  onPress={() => handleDeleteGuide(guide.id, guide.courseId)}
                   style={styles.deleteBtn}
                 >
                   <Ionicons name="trash" size={20} color="#E74C3C" />

@@ -8,6 +8,7 @@
     "lib": ["esnext", "dom"],
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "noEmit": true,
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "types": ["node"],

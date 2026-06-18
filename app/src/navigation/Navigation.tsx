@@ -13,6 +13,7 @@ import JornadaScreen from "../screens/Jornada";
 import GuiasScreen from "../screens/Guia";
 import DownloadsScreen from "../screens/Download";
 import ModuleScreen from "../screens/Modulo";
+import CalendarioScreen from "../screens/Calendario";
 
 export type JornadaStackParamList = {
   JornadaHome: undefined;
@@ -28,6 +29,7 @@ export type JornadaStackParamList = {
 export type AppTabsParamList = {
   Guias: undefined;
   Jornada: NavigatorScreenParams<JornadaStackParamList>;
+  Calendario: undefined;
   Download: undefined;
   Profile: undefined;
 };
@@ -70,6 +72,9 @@ function AppTabs() {
             case "Jornada":
               iconName = focused ? "leaf" : "leaf-outline";
               break;
+            case "Calendario":
+              iconName = focused ? "calendar" : "calendar-outline";
+              break;  
             case "Download":
               iconName = focused ? "download" : "download-outline";
               break;
@@ -102,6 +107,11 @@ function AppTabs() {
         name="Jornada"
         component={JornadaStack}
         options={{ tabBarLabel: "Jornada" }}
+      />
+      <Tab.Screen
+        name="Calendario"
+        component={CalendarioScreen}
+        options={{ tabBarLabel: "Calendario" }}
       />
       <Tab.Screen
         name="Download"
