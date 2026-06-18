@@ -1,5 +1,5 @@
 #  **ConectaJutai**
-O ConectaJutai é um aplicativo mobile desenvolvido com um foco em educação a distância para regiões com conectividade limitada. O projeto adota uma arquitetura offline-first, permitindo que os usuários acessem conteúdos educacionais sem dependência constante de internet.O sistema prioriza a experiência do usuário ao garantir que o progresso nos estudos seja registrado localmente e sincronizado com o servidor assim que uma conexão estável for detectada.
+O ConectaJutai é um aplicativo mobile desenvolvido com um foco em educação a distância para regiões com conectividade limitada. O projeto adota uma arquitetura offline-first, permitindo que os usuários acessem conteúdos educacionais sem dependência constante de internet. O sistema prioriza a experiência do usuário ao garantir que o progresso nos estudos seja registrado localmente e sincronizado com o servidor assim que uma conexão estável for detectada.
 
 ###  **Características Principais**<br>
 O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua através das seguintes funcionalidades:<br>
@@ -8,6 +8,7 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 •  Rastreamento de Progresso Offline — Armazenamento local de aulas assistidas e módulos concluídos <br>
 •  Download Online — Funcionalidade para baixar conteúdos quando houver conexão, permitindo o estudo posterior em modo avião ou áreas rurais <br>
 •  Sincronização Automática — Progresso sincronizado com o servidor quando a internet retorna<br>
+•  Calendário — Agenda com data, hora e local das mentorias presenciais<br>
 
 ###  Tecnologias Utilizadas
 | Tecnologia | Tipo | Descrição |
@@ -42,7 +43,8 @@ conecta-jutai/
 │   │   │   └── authContext.tsx
 │   │   ├── navigation/                      # Configuração de navegação
 │   │   │   └── Navigation.tsx
-│   │   ├── screens/                         # Telas do aplicativo       
+│   │   ├── screens/                         # Telas do aplicativo
+│   │   │   ├── Calendario.tsx  
 │   │   │   ├── Download.tsx
 │   │   │   ├── Guia.tsx
 │   │   │   ├── Jornada.tsx
@@ -69,12 +71,14 @@ conecta-jutai/
 │   │   │   └── supabaseClient.ts                             
 │   ├── controllers/                         # Lógica de negócio das rotas                                 
 │   │   │   ├── authController.ts
+│   │   │   ├── classController.ts
 │   │   │   ├── coursesController.ts
 │   │   │   └── progressController.ts
 │   ├── middleware/                                          
 │   │   │   └── authMiddleware.ts                           
 │   ├── routes/                              # Definição das rotas da API                                            
-│   │   │   ├── auth.ts                                     
+│   │   │   ├── auth.ts
+│   │   │   ├── class.ts                                
 │   │   │   ├── courses.ts                                  
 │   │   │   └── progress.ts                                  
 │   └── server.ts                            # Arquivo de entrada do servidor                                        
