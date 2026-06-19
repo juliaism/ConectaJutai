@@ -182,7 +182,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2C3E50',
     flex: 1,
-    textAlign: 'center'
+    textAlign: 'center',
+    marginTop: 40
   },
   video: {
     width: '100%',

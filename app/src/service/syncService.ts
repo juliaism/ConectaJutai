@@ -35,7 +35,7 @@ export const syncService = {
         OFFLINE_PROGRESS_KEY,
         JSON.stringify(progressList)
       );
-      console.log('✅ Progresso salvo offline');
+      console.log('Progresso salvo offline');
     } catch (err) {
       console.error('Erro ao salvar progresso offline:', err);
     }
@@ -45,13 +45,13 @@ export const syncService = {
     try {
       const state = await NetInfo.fetch();
       if (!state.isConnected) {
-        console.log('📡 Sem conexão. Aguardando...');
+        console.log('Sem conexão. Aguardando...');
         return;
       }
 
       const offlineData = await AsyncStorage.getItem(OFFLINE_PROGRESS_KEY);
       if (!offlineData) {
-        console.log('✅ Nenhum dado para sincronizar');
+        console.log('Nenhum dado para sincronizar');
         return;
       }
 
@@ -61,7 +61,7 @@ export const syncService = {
       );
 
       if (userProgress.length === 0) {
-        console.log('✅ Nenhum progresso do usuário para sincronizar');
+        console.log('Nenhum progresso do usuário para sincronizar');
         return;
       }
 
@@ -91,7 +91,7 @@ export const syncService = {
         await AsyncStorage.removeItem(OFFLINE_PROGRESS_KEY);
       }
 
-      console.log('✅ Sincronização concluída');
+      console.log('Sincronização concluída');
     } catch (err) {
       console.error('Erro ao sincronizar:', err);
     }
@@ -100,7 +100,7 @@ export const syncService = {
   startAutoSync: (userId: string): (() => void) => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       if (state.isConnected) {
-        console.log('🌐 Conexão restaurada. Sincronizando...');
+        console.log('Conexão restaurada. Sincronizando...');
         syncService.syncWhenOnline(userId);
       }
     });
@@ -120,7 +120,7 @@ export const syncService = {
   clearOfflineProgress: async (): Promise<void> => {
     try {
       await AsyncStorage.removeItem(OFFLINE_PROGRESS_KEY);
-      console.log('✅ Dados offline limpos');
+      console.log('Dados offline limpos');
     } catch (err) {
       console.error('Erro ao limpar dados offline:', err);
     }

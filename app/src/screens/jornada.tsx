@@ -114,9 +114,9 @@ export default function JornadaScreen({ navigation }: any) {
 
       {courses.length === 0 ? (
         <View style={styles.emptyState}>
-          <Ionicons name="cloud-download-outline" size={64} color="#BDC3C7" />
+          <Ionicons name="cloud-download-outline" size={64} color="#BDC3C7 textAlign: 'center'" />
           <Text style={styles.emptyText}>Nenhum curso baixado</Text>
-          <Text style={styles.emptySubtext}>Baixe um curso em "Guias" para começar sua jornada</Text>
+          <Text style={styles.emptySubtext}>Baixe um curso em "Cursos" para começar sua jornada</Text>
         </View>
       ) : (
         courses.map((course) => (
@@ -187,7 +187,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#27AE60',
     marginBottom: 20,
-    marginTop: 10
+    marginTop: 40,
+    textAlign: 'center'
   },
   emptyState: {
     alignItems: 'center',
@@ -198,12 +199,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#2C3E50',
-    marginTop: 16
+    marginTop: 16,
+    textAlign: 'center'
   },
   emptySubtext: {
     fontSize: 14,
     color: '#7F8C8D',
-    marginTop: 8
+    marginTop: 8,
+    textAlign: 'center'
   },
   courseCard: {
     backgroundColor: '#FFF',

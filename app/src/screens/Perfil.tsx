@@ -178,13 +178,14 @@ export default function ProfileScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 25,
+    padding: 20,
     backgroundColor: "#F4F7F6",
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 30,
+    marginBottom: 20,
+    marginTop: 40,
     textAlign: "center",
     color: "#27AE60",
   },

@@ -186,7 +186,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#27AE60',
     marginBottom: 20,
-    marginTop: 10
+    marginTop: 40,
+    textAlign: 'center'
   },
   courseCard: {
     backgroundColor: '#FFF',

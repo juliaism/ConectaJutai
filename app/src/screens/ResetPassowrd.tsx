@@ -34,7 +34,7 @@ export default function ResetPasswordScreen({ navigation }: Props) {
     }
 
     try {
-      const response = await api.post("/api/auth/reset", { //ip
+      const response = await api.post("/api/auth/reset", {
         phone,
         newPassword,
       });

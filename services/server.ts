@@ -5,6 +5,7 @@ import 'dotenv/config'
 import authRoutes from "./routes/auth.ts";
 import courseRoutes from "./routes/course.ts";
 import progressRoutes from "./routes/progress.ts";
+import classesRoutes from "./routes/classes.ts";
 
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/classes", classesRoutes);
 
 
 app.get("/", (req: Request, res: Response) => {

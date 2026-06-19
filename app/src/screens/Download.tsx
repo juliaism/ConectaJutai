@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#27AE60',
     marginTop: 40,
