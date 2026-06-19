@@ -96,14 +96,30 @@ conecta-jutai/
 ##  **Executar Localmente**<br>
 ### Pré-requisitos<br> 
 - Instalar o aplicativo Expo Go, disponivel na App Store e Google Play<br>
-- Node.js (versão 22)<br>
+- Instalar npm ou yarn
+- Instalar o Expo CLI  
+- Node.js (versão 20 ou superior)<br>
 - Computador e celular conectados à mesma rede de Wi-Fi<br>
 
 ### Como Rodar o Projeto<br>
--
--
--
--
+1. Clone o repositório<br>
+```
+git clone https://github.com/juliaism/conectajutai.git
+cd conectajutai
+```
+2. Instale as dependências<br>
+```
+npm install
+```
+ou
+```
+yarn install
+```
+3. Inicie o servidor<br>
+```
+npx expo start
+```
+4. Escaneie o QR CODE<br>
 
 
 
