@@ -1,15 +1,16 @@
 #  **ConectaJutai**
-O ConectaJutai é um aplicativo mobile desenvolvido com um foco em educação a distância para regiões com conectividade limitada. O projeto adota uma arquitetura offline-first, permitindo que os usuários acessem conteúdos educacionais sem dependência constante de internet.O sistema prioriza a experiência do usuário ao garantir que o progresso nos estudos seja registrado localmente e sincronizado com o servidor assim que uma conexão estável for detectada.
+O ConectaJutai é um aplicativo mobile desenvolvido com um foco em educação a distância para regiões com conectividade limitada. O projeto adota uma arquitetura offline-first, permitindo que os usuários acessem conteúdos educacionais sem dependência constante de internet. O sistema prioriza a experiência do usuário ao garantir que o progresso nos estudos seja registrado localmente e sincronizado com o servidor assim que uma conexão estável for detectada.
 
-###  **Características Principais**<br>
+## **Características Principais**<br>
 O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua através das seguintes funcionalidades:<br>
-•  Módulos de Cursos — Organização de conteúdo em níveis progressivos: Iniciante, Intermediário e Avançado<br>
-•  Videoaulas — Suporte a reprodução de vídeo otimizada para dispositivos móveis<br>
-•  Rastreamento de Progresso Offline — Armazenamento local de aulas assistidas e módulos concluídos <br>
-•  Download Online — Funcionalidade para baixar conteúdos quando houver conexão, permitindo o estudo posterior em modo avião ou áreas rurais <br>
-•  Sincronização Automática — Progresso sincronizado com o servidor quando a internet retorna<br>
+-  Módulos de Cursos — Organização de conteúdo em níveis progressivos: Iniciante, Intermediário e Avançado<br>
+-  Videoaulas — Suporte a reprodução de vídeo otimizada para dispositivos móveis<br>
+-  Rastreamento de Progresso Offline — Armazenamento local de aulas assistidas e módulos concluídos <br>
+-  Download Online — Funcionalidade para baixar conteúdos quando houver conexão, permitindo o estudo posterior em modo avião ou áreas rurais <br>
+-  Sincronização Automática — Progresso sincronizado com o servidor quando a internet retorna<br>
+-  Calendário — Agenda com data, hora e local das mentorias presenciais<br>
 
-###  Tecnologias Utilizadas
+## Tecnologias Utilizadas<br>
 | Tecnologia | Tipo | Descrição |
 |---|---|---|
 | **React Native** | Framework | Framework para desenvolvimento mobile multiplataforma |
@@ -25,7 +26,7 @@ O aplicativo foi estruturado para oferecer uma jornada de aprendizado contínua 
 | **bcrypt** | Segurança | Criptografia de senhas |
 | **JSONB** | Armazenamento | Armazenamento flexível de dados estruturados |
 
-###  **Estrutura do Projeto**<br>
+## **Estrutura do Projeto**<br>
 ```
 conecta-jutai/
 ├── .expo/
@@ -42,7 +43,8 @@ conecta-jutai/
 │   │   │   └── authContext.tsx
 │   │   ├── navigation/                      # Configuração de navegação
 │   │   │   └── Navigation.tsx
-│   │   ├── screens/                         # Telas do aplicativo       
+│   │   ├── screens/                         # Telas do aplicativo
+│   │   │   ├── Calendario.tsx  
 │   │   │   ├── Download.tsx
 │   │   │   ├── Guia.tsx
 │   │   │   ├── Jornada.tsx
@@ -69,12 +71,14 @@ conecta-jutai/
 │   │   │   └── supabaseClient.ts                             
 │   ├── controllers/                         # Lógica de negócio das rotas                                 
 │   │   │   ├── authController.ts
+│   │   │   ├── classController.ts
 │   │   │   ├── coursesController.ts
 │   │   │   └── progressController.ts
 │   ├── middleware/                                          
 │   │   │   └── authMiddleware.ts                           
 │   ├── routes/                              # Definição das rotas da API                                            
-│   │   │   ├── auth.ts                                     
+│   │   │   ├── auth.ts
+│   │   │   ├── class.ts                                
 │   │   │   ├── courses.ts                                  
 │   │   │   └── progress.ts                                  
 │   └── server.ts                            # Arquivo de entrada do servidor                                        
@@ -89,30 +93,42 @@ conecta-jutai/
 
 ```
 
-###  **Executar Localmente**<br>
+##  **Executar Localmente**<br>
+### Pré-requisitos<br> 
+- Instalar o aplicativo Expo Go, disponivel na App Store e Google Play<br>
+- Node.js (versão 22)<br>
+- Computador e celular conectados à mesma rede de Wi-Fi<br>
 
-###  **Autenticação**<br>
+### Como Rodar o Projeto<br>
+-
+-
+-
+-
+
+
+
+## **Autenticação**<br>
 A segurança do usuário é garantida por um sistema de credenciais simplificado e rigoroso:<br>
-•  Identificador: Telefone celular (exatamente 9 dígitos)<br>
-•  Credencial: Senha (exatamente 8 dígitos)<br>
-•  Segurança: As senhas são criptografadas utilizando bcrypt antes de serem armazenadas no banco de dados<br>
+-  Identificador: Telefone celular (exatamente 9 dígitos)<br>
+-  Credencial: Senha (exatamente 8 dígitos)<br>
+-  Segurança: As senhas são criptografadas utilizando bcrypt antes de serem armazenadas no banco de dados<br>
 
-###  **Rastreamento de Progresso**<br>
+##  **Rastreamento de Progresso**<br>
 O app registra automaticamente:<br>
-•  Aulas assistidas<br>
-•  Módulos concluídos<br>
-•  Porcentagem de conclusão por curso<br>
+-  Aulas assistidas<br>
+-  Módulos concluídos<br>
+-  Porcentagem de conclusão por curso<br>
 
-###  **Equipe**<br>
-• Júlia Labad Jatene - Ciência da Computação<br>
-• André Luiz Aragão Valentim - Administração<br>
-• Beatriz Amaral Damasceno - Engenharia Civil<br>
-• Eduarda Maffessoni Marques Melo - Engenharia Civil<br>
-• Edgar Vinícius Teixeira Teófilo - Engenharia da Computação<br>
-• Matheus Lima de Sá - Engenharia da Computação<br>
-• Maria Eduarda Lopes Alves - Arquitetura e Urbanismo<br>
-• Vitoria Campos Ferrari - Arquitetura e Urbanismo<br>
-• Luysa de Lima Mendes - Arquitetura e Urbanismo<br>
+##  **Equipe**<br>
+- Júlia Labad Jatene - Ciência da Computação<br>
+- André Luiz Aragão Valentim - Administração<br>
+- Beatriz Amaral Damasceno - Engenharia Civil<br>
+- Eduarda Maffessoni Marques Melo - Engenharia Civil<br>
+- Edgar Vinícius Teixeira Teófilo - Engenharia da Computação<br>
+- Matheus Lima de Sá - Engenharia da Computação<br>
+- Maria Eduarda Lopes Alves - Arquitetura e Urbanismo<br>
+- Vitoria Campos Ferrari - Arquitetura e Urbanismo<br>
+- Luysa de Lima Mendes - Arquitetura e Urbanismo<br>
 
 
 
